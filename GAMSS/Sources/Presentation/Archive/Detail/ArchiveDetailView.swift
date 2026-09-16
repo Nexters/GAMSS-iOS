@@ -15,6 +15,7 @@ struct ArchiveDetailView: View {
     @State private var isMonthPickerPresented = false
     @State private var shredMode: CardShredMode?
     @State private var selectedNote: DropNote?
+    @State private var isEmptyNotesModalPresented = false
     
     private let title: String
     
@@ -31,7 +32,11 @@ struct ArchiveDetailView: View {
             VStack(spacing: 0) {
                 NavigationBarView(title: title, onBack: { dismiss() }) {
                     Button {
-                        shredMode = .all
+                        if viewModel.notes.isEmpty {
+                            isEmptyNotesModalPresented = true
+                        } else {
+                            shredMode = .all
+                        }
                     } label: {
                         Text("비우기")
                             .typography(.body5Medium)
@@ -145,6 +150,20 @@ struct ArchiveDetailView: View {
                 .id(note.id)
                 .transition(.opacity)
                 .zIndex(1)
+            }
+
+            if isEmptyNotesModalPresented {
+                ModalContainerView(isPresented: $isEmptyNotesModalPresented) {
+                    ModalContentView(
+                        title: "비울 감정이 없어요",
+                        actions: [
+                            .init(title: "확인", style: .primary, action: {
+                                isEmptyNotesModalPresented = false
+                            })
+                        ]
+                    )
+                }
+                .zIndex(2)
             }
         }
         .animation(.easeOut(duration: 0.12), value: selectedNote?.id)
