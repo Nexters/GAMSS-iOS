@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ModalContainerView<Content: View>: View {
     @Binding private var isPresented: Bool
+    @State private var isAppeared = false
     
     private let dismissOnBackgroundTap: Bool
     private let content: () -> Content
@@ -24,22 +25,33 @@ struct ModalContainerView<Content: View>: View {
     }
     
     var body: some View {
-        ZStack {
-            Color.colorBlack
-                .opacity(0.7)
-                .ignoresSafeArea()
-                .onTapGesture {
-                    guard dismissOnBackgroundTap else { return }
+        Color.clear
+            .frame(width: 0, height: 0)
+            .fullScreenCover(isPresented: $isPresented) {
+                ZStack {
+                    Color.colorBlack
+                        .opacity(isAppeared ? 0.7 : 0)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            guard dismissOnBackgroundTap else { return }
+                            isPresented = false
+                        }
                     
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        isPresented = false
+                    content()
+                        .padding(.horizontal, 28)
+                        .scaleEffect(isAppeared ? 1 : 0.9)
+                        .opacity(isAppeared ? 1 : 0)
+                }
+                .presentationBackground(.clear)
+                .onAppear {
+                    withAnimation(.easeOut(duration: 0.25)) {
+                        isAppeared = true
                     }
                 }
-            
-            content()
-                .transition(.scale.combined(with: .opacity))
-                .padding(.horizontal, 28)
-        }
-        .animation(.easeInOut(duration: 0.25), value: isPresented)
+                .onDisappear {
+                    isAppeared = false
+                }
+            }
+            .transaction { $0.disablesAnimations = true }
     }
 }
