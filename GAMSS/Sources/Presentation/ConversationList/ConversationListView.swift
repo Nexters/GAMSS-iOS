@@ -16,6 +16,7 @@ struct ConversationListView: View {
     @StateObject private var viewModel: ConversationListViewModel
     @State private var selectedConversation: ConversationSummary?
     @State private var isSettingPresented = false
+    @State private var isDeleteConversationPresented = false
 
     init(viewModel: ConversationListViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -83,7 +84,7 @@ struct ConversationListView: View {
 
                     if viewModel.currentMode == .delete {
                         Button {
-                            Task { await viewModel.deleteConversations() }
+                            isDeleteConversationPresented = true
                         } label: {
                             Text("삭제하기")
                                 .typography(.body3Medium)
@@ -139,6 +140,23 @@ struct ConversationListView: View {
             set: { if !$0 { viewModel.alertMessage = nil } }
         )) {
             Button("확인", role: .cancel) {}
+        }
+        .background {
+            ModalContainerView(isPresented: $isDeleteConversationPresented) {
+                ModalContentView(
+                    title: "대화를 정말 삭제할까요?",
+                    subtitle: "대화를 이어갈 수 없으며, 카드를 생성할 수 없습니다.\n채팅은 영구적으로 삭제됩니다.",
+                    actions: [
+                        .init(title: "뒤로가기", style: .secondary, action: {
+                            isDeleteConversationPresented = false
+                        }),
+                        .init(title: "삭제하기", style: .destructive, action: {
+                            isDeleteConversationPresented = false
+                            Task { await viewModel.deleteConversations() }
+                        })
+                    ]
+                )
+            }
         }
     }
 
