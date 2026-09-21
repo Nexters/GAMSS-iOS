@@ -47,8 +47,12 @@ struct CardResultView: View {
     private var cardContent: some View {
         ZStack(alignment: .topTrailing) {
             CardView(card: card) {
-                foldGuideButton
+                foldGuideImage
             }
+            .contentShape(Rectangle())
+            .onTapGesture(perform: viewModel.advanceStage)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel("종이를 눌러 2번 접어주세요")
 
             closeButton
                 .padding([.top, .trailing], Spacing.spacing300)
@@ -65,13 +69,10 @@ struct CardResultView: View {
         .accessibilityLabel("닫기")
     }
 
-    private var foldGuideButton: some View {
-        Button(action: viewModel.advanceStage) {
-            Image("cardFoldGuide")
-                .resizable()
-                .frame(width: foldGuideSize.width, height: foldGuideSize.height)
-        }
-        .accessibilityLabel("종이를 눌러 2번 접어주세요")
+    private var foldGuideImage: some View {
+        Image("cardFoldGuide")
+            .resizable()
+            .frame(width: foldGuideSize.width, height: foldGuideSize.height)
     }
 
     private func foldStepImage(_ imageName: String, size: CGSize) -> some View {
