@@ -43,6 +43,20 @@ struct ArchiveView: View {
             }
         }
         .background(Color.colorWhite)
+        .navigationDestination(for: Emotion.self) { emotion in
+            ArchiveDetailView(
+                title: emotion.name,
+                viewModel: ArchiveDetailViewModel(
+                    fetchCardsByDateUseCase: DefaultFetchCardsByDateUseCase(
+                        cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared),
+                        emotion: emotion
+                    ),
+                    deleteAllCardUseCase: DefaultDeleteAllCardUseCase(
+                        cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared)
+                    )
+                )
+            )
+        }
         .navigationDestination(isPresented: $isSettingPresented) {
             SettingView()
         }
@@ -59,17 +73,7 @@ private extension ArchiveView {
             spacing: 11
         ) {
             ForEach(viewModel.emotions) { emotion in
-                NavigationLink {
-                    ArchiveDetailView(
-                        title: emotion.name,
-                        viewModel: ArchiveDetailViewModel(
-                            fetchCardsByDateUseCase: DefaultFetchCardsByDateUseCase(
-                                cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared),
-                                emotion: emotion
-                            ), deleteAllCardUseCase: DefaultDeleteAllCardUseCase(cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared))
-                        )
-                    )
-                } label: {
+                NavigationLink(value: emotion) {
                     TrashItemView(imageNamed: emotion.trashImageNamed)
                         .frame(width: 132, height: 172)
                 }
