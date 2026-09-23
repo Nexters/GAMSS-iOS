@@ -5,7 +5,7 @@
 //  Created by cchanmi on 7/24/26.
 //
 
-enum Emotion: String, CaseIterable, Equatable, Identifiable {
+enum Emotion: String, CaseIterable, Equatable, Hashable, Identifiable {
     case angry = "ANGER"
     case happy = "JOY"
     case anxious = "ANXIETY"
