@@ -32,22 +32,20 @@ struct ChatView: View {
         ZStack(alignment: .topTrailing) {
             chatContent
 
-            if viewModel.isEndConfirmationPresented {
-                ModalContainerView(isPresented: $viewModel.isEndConfirmationPresented) {
-                    ModalContentView(
-                        title: "대화를 종료하고 감정 기록을 생성할게요",
-                        subtitle: "감정 기록 생성 시 대화는 종료되며,\n더 이상 대화를 이어갈 수 없어요.",
-                        actions: [
-                            .init(title: "뒤로가기", style: .secondary, action: {
-                                viewModel.isEndConfirmationPresented = false
-                            }),
-                            .init(title: "기록 생성하기", style: .primary, action: {
-                                viewModel.isEndConfirmationPresented = false
-                                Task { await viewModel.confirmEndConversation() }
-                            })
-                        ]
-                    )
-                }
+            ModalContainerView(isPresented: $viewModel.isEndConfirmationPresented) {
+                ModalContentView(
+                    title: "대화를 종료하고 감정 기록을 생성할게요",
+                    subtitle: "감정 기록 생성 시 대화는 종료되며,\n더 이상 대화를 이어갈 수 없어요.",
+                    actions: [
+                        .init(title: "뒤로가기", style: .secondary, action: {
+                            viewModel.isEndConfirmationPresented = false
+                        }),
+                        .init(title: "기록 생성하기", style: .primary, action: {
+                            viewModel.isEndConfirmationPresented = false
+                            Task { await viewModel.confirmEndConversation() }
+                        })
+                    ]
+                )
             }
 
             if viewModel.isTokenUsagePopoverPresented {
@@ -71,16 +69,14 @@ struct ChatView: View {
                 .padding(.trailing, Spacing.spacing400)
             }
 
-            if viewModel.riskDetection != nil {
-                ModalContainerView(isPresented: Binding(
-                    get: { viewModel.riskDetection != nil },
-                    set: { if !$0 { viewModel.riskDetection = nil } }
-                )) {
-                    SupportAgencyDialogContentView(
-                        detection: viewModel.riskDetection ?? .none,
-                        onDismiss: { viewModel.riskDetection = nil }
-                    )
-                }
+            ModalContainerView(isPresented: Binding(
+                get: { viewModel.riskDetection != nil },
+                set: { if !$0 { viewModel.riskDetection = nil } }
+            )) {
+                SupportAgencyDialogContentView(
+                    detection: viewModel.riskDetection ?? .none,
+                    onDismiss: { viewModel.riskDetection = nil }
+                )
             }
 
             if viewModel.isEnding {
