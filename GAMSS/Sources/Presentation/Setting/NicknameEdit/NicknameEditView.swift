@@ -23,10 +23,13 @@ struct NicknameEditView: View {
                 Spacer().frame(height: 16)
                 Text("변경할 닉네임을 입력해주세요.")
                     .padding(.bottom, 12)
-                TextField(text: $viewModel.editingNickname) {
-                    Text("닉네임은 2~20자 사이로 입력해주세요.")
-                        .typography(.body3Medium)
-                        .foregroundStyle(Color.colorGray400)
+                TextField(
+                    text: Binding(
+                        get: { viewModel.editingNickname },
+                        set: { viewModel.updateEditingNickname($0) }
+                    )
+                ) {
+                    EmptyView()
                 }
                 .padding(.vertical, 14)
                 .padding(.horizontal, 16)
@@ -35,6 +38,11 @@ struct NicknameEditView: View {
                     Rectangle()
                         .strokeBorder(Color.colorGray950, lineWidth: 1)
                 )
+                
+                Text(viewModel.errorMessage ?? "")
+                    .typography(.body5Medium)
+                    .foregroundStyle(Color.colorRed)
+                    .padding(.top, 8)
                 
                 Spacer()
                 
