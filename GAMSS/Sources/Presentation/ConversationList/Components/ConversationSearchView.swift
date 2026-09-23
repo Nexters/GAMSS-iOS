@@ -14,21 +14,35 @@ struct ConversationSearchView: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            TextField(text: $editingText) {
-                Text("검색어 입력")
-                    .typography(.body4Medium)
-                    .foregroundStyle(Color.colorGray400)
+            HStack(spacing: 8) {
+                TextField(text: $editingText) {
+                    Text("검색어 입력")
+                        .typography(.body4Medium)
+                        .foregroundStyle(Color.colorGray400)
+                }
+                .typography(.body4Medium)
+                .foregroundStyle(Color.colorGray950)
+                .submitLabel(.search)
+                .onSubmit {
+                    onTappedSearchButton?()
+                }
+
+                if !editingText.isEmpty {
+                    Button {
+                        editingText = ""
+                    } label: {
+                        Image(.xmarkCircleFillGray)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(Color.colorGray800)
+                    }
+                }
             }
-            .typography(.body4Medium)
-            .foregroundStyle(Color.colorGray950)
             .padding(.vertical, 11)
             .padding(.horizontal, 16)
             .background(Color.colorGray075)
-            .submitLabel(.search)
-            .onSubmit {
-                onTappedSearchButton?()
-            }
-            
+
             Button {
                 onTappedCancelButton?()
             } label: {
