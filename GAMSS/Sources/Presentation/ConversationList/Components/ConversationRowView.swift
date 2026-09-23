@@ -20,7 +20,7 @@ struct ConversationRowView: View {
 
             Text(
                 ConversationPreviewTextFormatter.truncated(
-                    conversation.title ?? "제목 없음"
+                    conversation.title ?? "제목 없는 대화"
                 )
             )
             .typography(.body4Medium)
