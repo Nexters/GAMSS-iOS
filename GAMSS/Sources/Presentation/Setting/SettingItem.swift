@@ -52,11 +52,11 @@ enum SettingItem: Identifiable {
     
     var action: Action {
         switch self {
-        case .accountInfo, .notification:
+        case .accountInfo:
             .navigate
         case .privacyPolicy:
             .web(Environment.privacyPolicyURL)
-        case .appVersion:
+        case .appVersion, .notification:
             .none
         }
     }
