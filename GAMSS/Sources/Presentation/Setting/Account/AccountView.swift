@@ -95,7 +95,13 @@ struct AccountView: View {
         switch item {
         case .changeNickname:
             NavigationLink {
-                NicknameEditView(viewModel: NicknameEditViewModel(updateNicknameUseCase: DefaultUpdateNicknameUseCase(memberRepository: DefaultMemberRepository(networkManager: NetworkManager.shared, tokenStorage: TokenStorage.shared), userManager: UserManager.shared)))
+                NicknameEditView(viewModel: NicknameEditViewModel(
+                    updateNicknameUseCase: DefaultUpdateNicknameUseCase(
+                        memberRepository: DefaultMemberRepository(networkManager: NetworkManager.shared, tokenStorage: TokenStorage.shared),
+                        userManager: UserManager.shared
+                    ),
+                    currentNickname: userManager.user?.nickname ?? ""
+                ))
             } label: {
                 row
             }

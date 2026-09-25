@@ -18,7 +18,8 @@ struct DefaultUpdateNicknameUseCase: UpdateNicknameUseCase {
     
     func execute(_ nickname: String) async throws {
         let nicknameLength = nickname.count
-        guard nicknameLength >= 2 && nicknameLength <= 20 else {
+        guard nicknameLength >= NicknamePolicy.minimumLength
+            && nicknameLength <= NicknamePolicy.maximumLength else {
             throw AccountError.invalidNickname
         }
         let updatedUser = try await memberRepository.updateNickname(nickname)
