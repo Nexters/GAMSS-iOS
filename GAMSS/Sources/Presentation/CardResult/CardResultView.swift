@@ -21,7 +21,6 @@ struct CardResultView: View {
     }
 
     private let foldGuideSize = CGSize(width: 190, height: 68)
-    private let foldStepOneSize = CGSize(width: 353, height: 273)
     private let foldStepTwoSize = CGSize(width: 237, height: 253)
     private let discardArrowSize = CGSize(width: 101, height: 209)
     private let trashBinSize = CGSize(width: 402, height: 232)
@@ -34,10 +33,6 @@ struct CardResultView: View {
             switch viewModel.stage {
             case .unfolded:
                 cardContent
-            case .foldedOnce:
-                foldStepImage("cardFoldStepOne", size: foldStepOneSize)
-            case .foldedTwice:
-                foldStepImage("cardFoldStepTwo", size: foldStepTwoSize)
             case .readyToDiscard:
                 discardableCard
             }
@@ -52,7 +47,7 @@ struct CardResultView: View {
             .contentShape(Rectangle())
             .onTapGesture(perform: viewModel.advanceStage)
             .accessibilityAddTraits(.isButton)
-            .accessibilityLabel("종이를 눌러 2번 접어주세요")
+            .accessibilityLabel("종이를 눌러 접어주세요")
 
             closeButton
                 .padding([.top, .trailing], Spacing.spacing300)
@@ -73,15 +68,6 @@ struct CardResultView: View {
         Image("cardFoldGuide")
             .resizable()
             .frame(width: foldGuideSize.width, height: foldGuideSize.height)
-    }
-
-    private func foldStepImage(_ imageName: String, size: CGSize) -> some View {
-        Button(action: viewModel.advanceStage) {
-            Image(imageName)
-                .resizable()
-                .frame(width: size.width, height: size.height)
-        }
-        .accessibilityLabel("종이 접기")
     }
 
     private var discardableCard: some View {

@@ -12,15 +12,11 @@ import Foundation
 final class CardResultViewModel: ObservableObject {
     enum FoldStage: Equatable {
         case unfolded
-        case foldedOnce
-        case foldedTwice
         case readyToDiscard
 
         var next: FoldStage? {
             switch self {
-            case .unfolded: .foldedOnce
-            case .foldedOnce: .foldedTwice
-            case .foldedTwice: .readyToDiscard
+            case .unfolded: .readyToDiscard
             case .readyToDiscard: nil
             }
         }

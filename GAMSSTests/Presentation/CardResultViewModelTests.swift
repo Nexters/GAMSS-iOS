@@ -11,9 +11,7 @@ import XCTest
 @MainActor
 final class CardResultViewModelTests: XCTestCase {
     func test_foldStage_next_advancesThroughEachStageInOrder() {
-        XCTAssertEqual(CardResultViewModel.FoldStage.unfolded.next, .foldedOnce)
-        XCTAssertEqual(CardResultViewModel.FoldStage.foldedOnce.next, .foldedTwice)
-        XCTAssertEqual(CardResultViewModel.FoldStage.foldedTwice.next, .readyToDiscard)
+        XCTAssertEqual(CardResultViewModel.FoldStage.unfolded.next, .readyToDiscard)
     }
 
     func test_foldStage_next_readyToDiscard_returnsNil() {
@@ -25,17 +23,11 @@ final class CardResultViewModelTests: XCTestCase {
 
         XCTAssertEqual(viewModel.stage, .unfolded)
         viewModel.advanceStage()
-        XCTAssertEqual(viewModel.stage, .foldedOnce)
-        viewModel.advanceStage()
-        XCTAssertEqual(viewModel.stage, .foldedTwice)
-        viewModel.advanceStage()
         XCTAssertEqual(viewModel.stage, .readyToDiscard)
     }
 
     func test_advanceStage_atReadyToDiscard_staysPut() {
         let viewModel = CardResultViewModel()
-        viewModel.advanceStage()
-        viewModel.advanceStage()
         viewModel.advanceStage()
 
         viewModel.advanceStage()
