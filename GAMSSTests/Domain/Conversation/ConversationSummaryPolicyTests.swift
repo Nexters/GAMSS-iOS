@@ -14,6 +14,7 @@ final class ConversationSummaryPolicyTests: XCTestCase {
 
         XCTAssertEqual(result.value, "안녕\n")
         XCTAssertFalse(result.shouldDismissKeyboard)
+        XCTAssertFalse(result.didExceedLimit)
     }
 
     func test_normalizeInput_withinMaxLength_returnsUnchanged() {
@@ -23,14 +24,16 @@ final class ConversationSummaryPolicyTests: XCTestCase {
 
         XCTAssertEqual(result.value, raw)
         XCTAssertFalse(result.shouldDismissKeyboard)
+        XCTAssertFalse(result.didExceedLimit)
     }
 
-    func test_normalizeInput_overMaxLength_truncatesToMaxLength() {
+    func test_normalizeInput_overMaxLength_truncatesToMaxLengthAndSignalsExceeded() {
         let raw = String(repeating: "가", count: ConversationSummaryPolicy.maxMessageLength + 10)
 
         let result = ConversationSummaryPolicy.normalizeInput(raw)
 
         XCTAssertEqual(result.value.count, ConversationSummaryPolicy.maxMessageLength)
         XCTAssertFalse(result.shouldDismissKeyboard)
+        XCTAssertTrue(result.didExceedLimit)
     }
 }

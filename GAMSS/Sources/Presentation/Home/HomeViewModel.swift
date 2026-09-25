@@ -12,10 +12,13 @@ import Foundation
 final class HomeViewModel: ObservableObject {
     @Published var input: String = ""
     @Published var alertMessage: String?
+    @Published private(set) var toastMessage: String?
     @Published var pendingFirstMessage: PendingFirstMessage?
     @Published private(set) var selectedEmotions: Set<EmotionCharacter> = Set(EmotionCharacter.allCases)
     @Published var isEmotionPickerOpen = false
     @Published private(set) var isTokenExceeded = false
+
+    private var toastDismissTask: Task<Void, Never>?
 
     let composerDisabledPlaceholder = "오늘의 토큰을 모두 사용했어요"
 
@@ -45,14 +48,40 @@ final class HomeViewModel: ObservableObject {
     }
 
     /// 입력창의 원시 입력값을 받아 정책에 맞게 정규화하고, 키보드를 내려야 하는지 돌려준다.
+    /// 입력이 최대 길이에 걸려있는 시점에 맞춰 토스트도 같이 띄운다 — `isSendDisabled`가
+    /// 보는 조건(`isAtLengthLimit`)과 완전히 같은 조건이라, 토스트가 뜨는 시점과 전송이
+    /// 막히는 시점이 항상 일치한다.
     func updateInput(_ rawValue: String) -> Bool {
         let result = ConversationSummaryPolicy.normalizeInput(rawValue)
         input = result.value
+        if isAtLengthLimit {
+            showLengthLimitToast()
+        }
         return result.shouldDismissKeyboard
     }
 
+    /// 토스트는 2초만 보여주고 자동으로 닫는다. 전송 가능 여부(`isSendDisabled`)는 이 토스트
+    /// 타이머와 무관하게 `isAtLengthLimit`을 직접 보고 판단하므로, 토스트가 사라진 뒤에도
+    /// 글자수가 여전히 최대 길이면 전송은 계속 막혀있다.
+    private func showLengthLimitToast() {
+        toastMessage = ConversationSummaryPolicy.lengthLimitToastMessage
+        toastDismissTask?.cancel()
+        toastDismissTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            guard !Task.isCancelled else { return }
+            self?.toastMessage = nil
+        }
+    }
+
+    private var isAtLengthLimit: Bool {
+        input.count >= ConversationSummaryPolicy.maxMessageLength
+    }
+
     var isSendDisabled: Bool {
-        input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectedEmotions.isEmpty || isTokenExceeded
+        input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || selectedEmotions.isEmpty
+            || isTokenExceeded
+            || isAtLengthLimit
     }
 
     /// 화면 진입/재진입마다 호출한다. 채팅에서 토큰을 다 쓰고 돌아왔을 수 있어, 프로필과

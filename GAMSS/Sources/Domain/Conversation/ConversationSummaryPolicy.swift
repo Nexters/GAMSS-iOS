@@ -15,9 +15,12 @@ enum ConversationSummaryPolicy {
     /// 요약기(KoBART) 인코더 입력 한계. 이 크기로 청크를 끊어 한 번씩만 요약한다.
     static let summaryChunkTokenBudget = 512
 
+    static let lengthLimitToastMessage = "메시지는 140자까지 입력할 수 있어요"
+
     struct InputNormalizationResult: Equatable {
         let value: String
         let shouldDismissKeyboard: Bool
+        let didExceedLimit: Bool
     }
 
     /// 메시지 입력창의 원시 입력값을 정책에 맞게 정규화한다. `maxMessageLength`를 넘지 않도록
@@ -25,9 +28,13 @@ enum ConversationSummaryPolicy {
     /// 한다).
     static func normalizeInput(_ raw: String) -> InputNormalizationResult {
         guard raw.count > maxMessageLength else {
-            return InputNormalizationResult(value: raw, shouldDismissKeyboard: false)
+            return InputNormalizationResult(value: raw, shouldDismissKeyboard: false, didExceedLimit: false)
         }
 
-        return InputNormalizationResult(value: String(raw.prefix(maxMessageLength)), shouldDismissKeyboard: false)
+        return InputNormalizationResult(
+            value: String(raw.prefix(maxMessageLength)),
+            shouldDismissKeyboard: false,
+            didExceedLimit: true
+        )
     }
 }

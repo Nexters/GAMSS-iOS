@@ -19,6 +19,58 @@ struct HomeView: View {
     }
 
     var body: some View {
+        ZStack(alignment: .bottom) {
+            mainContent
+
+            if let toastMessage = viewModel.toastMessage {
+                ToastView(message: toastMessage)
+                    .padding(.bottom, Spacing.spacing200)
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.toastMessage)
+        .onChange(of: viewModel.pendingFirstMessage) { _, newValue in
+            if newValue != nil { isInputFocused = false }
+        }
+        .navigationDestination(item: $viewModel.pendingFirstMessage) { pendingFirstMessage in
+            ChatView(
+                viewModel: ChatViewModel(
+                    sendMessageUseCase: SendMessageUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
+                    getMessagesUseCase: GetMessagesUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
+                    endConversationUseCase: EndConversationUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
+                    createCardUseCase: CreateCardUseCase(cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared)),
+                    getTokenUsageUseCase: GetTokenUsageUseCase(memberRepository: DefaultMemberRepository(networkManager: NetworkManager.shared, tokenStorage: .shared)),
+                    updateConversationTitleUseCase: UpdateConversationTitleUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
+                    detectRiskInTextUseCase: DetectRiskInTextUseCase(repository: DefaultRiskLexiconRepository()),
+                    summaryStore: LazyConversationSummaryStore(),
+                    pendingFirstMessage: pendingFirstMessage
+                )
+            )
+        }
+        .navigationDestination(isPresented: $isSettingPresented) {
+            SettingView()
+        }
+        .task {
+            if userManager.user != nil { isGreetingReady = true }
+            async let profile: Void = viewModel.loadProfileIfNeeded()
+            async let tokenUsage: Void = viewModel.loadTokenUsage()
+            _ = await (profile, tokenUsage)
+        }
+        .onChange(of: userManager.user != nil) { _, isReady in
+            guard isReady, !isGreetingReady else { return }
+            withAnimation(.easeInOut(duration: 0.3)) {
+                isGreetingReady = true
+            }
+        }
+        .alert(viewModel.alertMessage ?? "", isPresented: Binding(
+            get: { viewModel.alertMessage != nil },
+            set: { if !$0 { viewModel.alertMessage = nil } }
+        )) {
+            Button("확인", role: .cancel) {}
+        }
+    }
+
+    private var mainContent: some View {
         ZStack {
             GeometryReader { geo in
                 Image("homeBackgroundPaper")
@@ -84,45 +136,6 @@ struct HomeView: View {
         // 이미지가 GeometryReader의 상대 좌표(geo.size)로 위치를 잡고 있어서 그 영역이
         // 줄어들면 같이 움직여 보인다 — 키보드에 반응해 레이아웃이 줄어들지 않게 한다.
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .onChange(of: viewModel.pendingFirstMessage) { _, newValue in
-            if newValue != nil { isInputFocused = false }
-        }
-        .navigationDestination(item: $viewModel.pendingFirstMessage) { pendingFirstMessage in
-            ChatView(
-                viewModel: ChatViewModel(
-                    sendMessageUseCase: SendMessageUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
-                    getMessagesUseCase: GetMessagesUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
-                    endConversationUseCase: EndConversationUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
-                    createCardUseCase: CreateCardUseCase(cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared)),
-                    getTokenUsageUseCase: GetTokenUsageUseCase(memberRepository: DefaultMemberRepository(networkManager: NetworkManager.shared, tokenStorage: .shared)),
-                    updateConversationTitleUseCase: UpdateConversationTitleUseCase(conversationRepository: DefaultConversationRepository(networkManager: NetworkManager.shared)),
-                    detectRiskInTextUseCase: DetectRiskInTextUseCase(repository: DefaultRiskLexiconRepository()),
-                    summaryStore: LazyConversationSummaryStore(),
-                    pendingFirstMessage: pendingFirstMessage
-                )
-            )
-        }
-        .navigationDestination(isPresented: $isSettingPresented) {
-            SettingView()
-        }
-        .task {
-            if userManager.user != nil { isGreetingReady = true }
-            async let profile: Void = viewModel.loadProfileIfNeeded()
-            async let tokenUsage: Void = viewModel.loadTokenUsage()
-            _ = await (profile, tokenUsage)
-        }
-        .onChange(of: userManager.user != nil) { _, isReady in
-            guard isReady, !isGreetingReady else { return }
-            withAnimation(.easeInOut(duration: 0.3)) {
-                isGreetingReady = true
-            }
-        }
-        .alert(viewModel.alertMessage ?? "", isPresented: Binding(
-            get: { viewModel.alertMessage != nil },
-            set: { if !$0 { viewModel.alertMessage = nil } }
-        )) {
-            Button("확인", role: .cancel) {}
-        }
     }
 
     /// "{닉네임}님 오늘도" / "감쓰에 버려볼까요?" — 닉네임 부분만 분홍 배경으로 하이라이트한다.
