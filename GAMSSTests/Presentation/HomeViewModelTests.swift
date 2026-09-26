@@ -189,6 +189,25 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.selectedEmotions.isEmpty, "전체 해제가 허용되어야 함")
     }
 
+    func test_toggleEmotion_deselectingLast_showsEmotionRequiredToast() {
+        let viewModel = makeViewModel()
+        for emotion in EmotionCharacter.allCases where emotion != .joy {
+            viewModel.toggleEmotion(emotion)
+        }
+
+        viewModel.toggleEmotion(.joy)
+
+        XCTAssertEqual(viewModel.toastMessage, HomeViewModel.emotionRequiredToastMessage)
+    }
+
+    func test_toggleEmotion_deselectingNonLast_doesNotShowToast() {
+        let viewModel = makeViewModel()
+
+        viewModel.toggleEmotion(.joy)
+
+        XCTAssertNil(viewModel.toastMessage)
+    }
+
     func test_isEmotionPickerOpen_defaultsToFalse() {
         let viewModel = makeViewModel()
 

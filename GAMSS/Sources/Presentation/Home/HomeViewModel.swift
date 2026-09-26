@@ -21,6 +21,7 @@ final class HomeViewModel: ObservableObject {
     private var toastDismissTask: Task<Void, Never>?
 
     let composerDisabledPlaceholder = "오늘의 토큰을 모두 사용했어요"
+    static let emotionRequiredToastMessage = "감정은 최소 한 개 남겨 주세요."
 
     private let fetchMyProfileUseCase: FetchMyProfileUseCase
     private let getTokenUsageUseCase: GetTokenUsageUseCase
@@ -55,16 +56,16 @@ final class HomeViewModel: ObservableObject {
         let result = ConversationSummaryPolicy.normalizeInput(rawValue)
         input = result.value
         if isAtLengthLimit {
-            showLengthLimitToast()
+            showToast(ConversationSummaryPolicy.lengthLimitToastMessage)
         }
         return result.shouldDismissKeyboard
     }
 
     /// 토스트는 2초만 보여주고 자동으로 닫는다. 전송 가능 여부(`isSendDisabled`)는 이 토스트
-    /// 타이머와 무관하게 `isAtLengthLimit`을 직접 보고 판단하므로, 토스트가 사라진 뒤에도
-    /// 글자수가 여전히 최대 길이면 전송은 계속 막혀있다.
-    private func showLengthLimitToast() {
-        toastMessage = ConversationSummaryPolicy.lengthLimitToastMessage
+    /// 타이머와 무관하게 조건(글자수 제한, 감정 전체 해제 등)을 직접 보고 판단하므로, 토스트가
+    /// 사라진 뒤에도 그 조건이 여전하면 전송은 계속 막혀있다.
+    private func showToast(_ message: String) {
+        toastMessage = message
         toastDismissTask?.cancel()
         toastDismissTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: 2_000_000_000)
@@ -97,10 +98,14 @@ final class HomeViewModel: ObservableObject {
     }
 
     /// 감정 선택을 토글한다. 전체 해제(0개)도 허용한다 — 그 경우 `isSendDisabled`가 true가
-    /// 되어 전송 버튼이 비활성화되는 방식으로 "최소 1개 선택" 제약을 강제한다.
+    /// 되어 전송 버튼이 비활성화되는 방식으로 "최소 1개 선택" 제약을 강제하고, 마지막 1개를
+    /// 해제하는 순간에는 토스트로도 안내한다.
     func toggleEmotion(_ emotion: EmotionCharacter) {
         if selectedEmotions.contains(emotion) {
             selectedEmotions.remove(emotion)
+            if selectedEmotions.isEmpty {
+                showToast(Self.emotionRequiredToastMessage)
+            }
         } else {
             selectedEmotions.insert(emotion)
         }
