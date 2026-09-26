@@ -17,6 +17,7 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var selectedEmotions: Set<EmotionCharacter> = Set(EmotionCharacter.allCases)
     @Published var isEmotionPickerOpen = false
     @Published private(set) var isTokenExceeded = false
+    @Published private(set) var isNetworkUnreachable = false
 
     private var toastDismissTask: Task<Void, Never>?
 
@@ -43,9 +44,20 @@ final class HomeViewModel: ObservableObject {
         guard userManager.user == nil else { return }
         do {
             userManager.user = try await fetchMyProfileUseCase.execute()
+            isNetworkUnreachable = false
+        } catch NetworkError.noConnection {
+            isNetworkUnreachable = true
         } catch {
             alertMessage = "사용자 정보를 불러오지 못했어요"
         }
+    }
+
+    /// 네트워크 끊김 화면의 "재시도" 버튼에서 호출한다. 상태를 초기화하고 진입 시 하던
+    /// 조회를 다시 시도한다.
+    func retryAfterNetworkFailure() async {
+        isNetworkUnreachable = false
+        await loadProfileIfNeeded()
+        await loadTokenUsage()
     }
 
     /// 입력창의 원시 입력값을 받아 정책에 맞게 정규화하고, 키보드를 내려야 하는지 돌려준다.
@@ -91,6 +103,8 @@ final class HomeViewModel: ObservableObject {
         do {
             let usage = try await getTokenUsageUseCase.execute()
             isTokenExceeded = usage.exceeded
+        } catch NetworkError.noConnection {
+            isNetworkUnreachable = true
         } catch {
             // 실패해도 조용히 무시한다 — 입력을 막을지 여부만 결정하는 부가 정보라, 홈 진입
             // 자체를 방해하는 얼럿까지는 띄우지 않는다.

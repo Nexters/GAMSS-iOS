@@ -72,26 +72,31 @@ struct HomeView: View {
 
     private var mainContent: some View {
         ZStack {
-            GeometryReader { geo in
-                Image("homeBackgroundPaper")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: geo.size.width, height: geo.size.height)
-                    .clipped()
-            }
-            .ignoresSafeArea()
-
-            decorations
-
-            // 화면의 빈 영역(다른 인터랙티브 뷰가 가리지 않는 부분)을 탭하면 키보드와 감정
-            // 드롭다운을 내린다. TextEditor/버튼은 그 위에 그려져 자기 탭을 먼저 가져가므로
-            // 커서 이동 등은 방해받지 않는다.
-            Color.clear
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    isInputFocused = false
-                    viewModel.isEmotionPickerOpen = false
+            if viewModel.isNetworkUnreachable {
+                Color.colorWhite
+                    .ignoresSafeArea()
+            } else {
+                GeometryReader { geo in
+                    Image("homeBackgroundPaper")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
                 }
+                .ignoresSafeArea()
+
+                decorations
+
+                // 화면의 빈 영역(다른 인터랙티브 뷰가 가리지 않는 부분)을 탭하면 키보드와 감정
+                // 드롭다운을 내린다. TextEditor/버튼은 그 위에 그려져 자기 탭을 먼저 가져가므로
+                // 커서 이동 등은 방해받지 않는다.
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        isInputFocused = false
+                        viewModel.isEmotionPickerOpen = false
+                    }
+            }
 
             VStack(alignment: .leading, spacing: 0) {
                 NavigationBarView(leading: .logo) {
@@ -106,30 +111,38 @@ struct HomeView: View {
                             .foregroundStyle(Color.colorGray900)
                     }
                 }
-                .padding(.bottom, 188 - (NavigationBarMetrics.height - 24) / 2)
+                .padding(.bottom, viewModel.isNetworkUnreachable ? 0 : 188 - (NavigationBarMetrics.height - 24) / 2)
 
-                VStack(alignment: .leading, spacing: 0) {
-                    greeting
-                        .padding(.bottom, Spacing.spacing500)
-                        .opacity(isGreetingReady ? 1 : 0)
+                if viewModel.isNetworkUnreachable {
+                    // 인사말/입력창과 같은 자리를 대체한다. 네비바는 그대로 위에 남고, 이 뷰가
+                    // maxHeight: .infinity로 남은 공간을 채우며 그 안에서 중앙 정렬된다.
+                    NetworkFailureView {
+                        Task { await viewModel.retryAfterNetworkFailure() }
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 0) {
+                        greeting
+                            .padding(.bottom, Spacing.spacing500)
+                            .opacity(isGreetingReady ? 1 : 0)
 
-                    MessageComposerView(
-                        input: $viewModel.input,
-                        selectedEmotions: viewModel.selectedEmotions,
-                        isEmotionPickerOpen: $viewModel.isEmotionPickerOpen,
-                        isSendDisabled: viewModel.isSendDisabled,
-                        onToggleEmotion: { viewModel.toggleEmotion($0) },
-                        onCommit: { viewModel.send() },
-                        onInputChange: { viewModel.updateInput($0) },
-                        isFocused: $isInputFocused,
-                        isDisabled: viewModel.isTokenExceeded,
-                        disabledPlaceholder: viewModel.composerDisabledPlaceholder
-                    )
+                        MessageComposerView(
+                            input: $viewModel.input,
+                            selectedEmotions: viewModel.selectedEmotions,
+                            isEmotionPickerOpen: $viewModel.isEmotionPickerOpen,
+                            isSendDisabled: viewModel.isSendDisabled,
+                            onToggleEmotion: { viewModel.toggleEmotion($0) },
+                            onCommit: { viewModel.send() },
+                            onInputChange: { viewModel.updateInput($0) },
+                            isFocused: $isInputFocused,
+                            isDisabled: viewModel.isTokenExceeded,
+                            disabledPlaceholder: viewModel.composerDisabledPlaceholder
+                        )
 
-                    Spacer()
+                        Spacer()
+                    }
+                    .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
+                    .padding(.bottom, Spacing.spacing400)
                 }
-                .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
-                .padding(.bottom, Spacing.spacing400)
             }
         }
         // 키보드가 올라오면 SwiftUI가 기본적으로 사용 가능한 영역을 줄이는데, 장식
