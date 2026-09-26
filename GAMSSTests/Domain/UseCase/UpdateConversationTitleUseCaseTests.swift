@@ -55,6 +55,17 @@ final class UpdateConversationTitleUseCaseTests: XCTestCase {
         XCTAssertEqual(repository.receivedTitle, "안녕")
     }
 
+    func test_execute_truncatesTitleExceedingMaxLength() async throws {
+        let repository = MockConversationRepository()
+        let useCase = UpdateConversationTitleUseCase(conversationRepository: repository)
+        let longTitle = String(repeating: "가", count: 139)
+
+        try await useCase.execute(conversationId: 10, title: longTitle)
+
+        XCTAssertEqual(repository.receivedTitle?.count, UpdateConversationTitleUseCase.maxTitleLength)
+        XCTAssertEqual(repository.receivedTitle, String(longTitle.prefix(UpdateConversationTitleUseCase.maxTitleLength)))
+    }
+
     func test_execute_propagatesRepositoryError() async {
         let repository = MockConversationRepository()
         repository.stubbedUpdateTitleResult = .failure(SummaryError.inferenceFailed())
