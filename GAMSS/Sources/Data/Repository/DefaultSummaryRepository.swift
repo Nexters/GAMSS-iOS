@@ -82,7 +82,7 @@ actor DefaultSummaryRepository: SummaryRepository {
 
             // tokenizer_config.json이 따로 없으므로 tokenizer_class만 채운 최소 설정을 함께 둔다.
             // 이 모델은 BPE + RobertaProcessing 구성이라 RobertaTokenizer로 지정하면 BPETokenizer로 매핑된다.
-            let minimalTokenizerConfig = Data(#"{"tokenizer_class": "RobertaTokenizer"}"#.utf8)
+            let minimalTokenizerConfig = Data(#"{"tokenizer_class": "RobertaTokenizer", "unk_token": "<unk>"}"#.utf8)
             try minimalTokenizerConfig.write(to: isolatedFolder.appendingPathComponent("tokenizer_config.json"))
 
             return try await AutoTokenizer.from(modelFolder: isolatedFolder)
