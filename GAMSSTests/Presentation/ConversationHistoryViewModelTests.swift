@@ -37,7 +37,7 @@ private final class MockConversationRepository: ConversationRepository {
         fatalError("사용 안 함")
     }
 
-    func searchConversations(_ text: String) async throws -> SearchChatResponseDTO {
+    func searchConversations(_ text: String, page: Int, size: Int) async throws -> ConversationPage {
         fatalError("사용 안 함")
     }
 }

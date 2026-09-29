@@ -155,7 +155,7 @@ private final class MockConversationRepositoryForRisk: ConversationRepository {
     func updateTitle(conversationId: Int, title: String) async throws {}
     func endConversation(conversationId: Int) async throws {}
     func deleteConversations(_ ids: [Int]) async throws {}
-    func searchConversations(_ text: String) async throws -> SearchChatResponseDTO {
+    func searchConversations(_ text: String, page: Int, size: Int) async throws -> ConversationPage {
         fatalError("사용 안 함")
     }
 }
