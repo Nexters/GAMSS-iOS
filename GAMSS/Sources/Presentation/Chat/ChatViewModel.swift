@@ -217,6 +217,7 @@ final class ChatViewModel: ObservableObject {
             isTokenUsageStale = false
         } catch NetworkError.noConnection {
             isNetworkUnreachable = true
+            isTokenUsagePopoverPresented = false
         } catch {
             tokenUsageErrorMessage = "토큰 사용량을 불러오지 못했어요"
         }

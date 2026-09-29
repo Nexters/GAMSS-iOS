@@ -1168,6 +1168,19 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.tokenUsageErrorMessage, "네트워크 끊김은 팝오버 에러 문구 대신 전용 화면으로 안내해야 함")
     }
 
+    /// 대화 중 토큰 사용량 팝오버가 떠 있는 상태로 조회가 끊기면, 그 아래 깔리는
+    /// 네트워크 끊김 화면 위에 팝오버가 겹쳐 뜨지 않도록 팝오버도 같이 닫아야 함.
+    func test_loadTokenUsage_onNetworkFailure_dismissesTokenUsagePopover() async {
+        let memberRepository = MockMemberRepository()
+        memberRepository.stubbedTokenUsageResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(memberRepository: memberRepository)
+        viewModel.isTokenUsagePopoverPresented = true
+
+        await viewModel.loadTokenUsage()
+
+        XCTAssertFalse(viewModel.isTokenUsagePopoverPresented)
+    }
+
     func test_send_commentStatusLimitExceeded_disablesComposerAndSetsPlaceholder() async {
         let repository = MockConversationRepository()
         let sentMessage = Message(id: 1, conversationId: 10, sender: .user, content: "안녕", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
