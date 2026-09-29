@@ -29,6 +29,7 @@ final class ChatViewModel: ObservableObject {
     @Published var isTokenUsagePopoverPresented = false
     @Published var riskDetection: RiskDetection?
     @Published private(set) var isTokenExceeded = false
+    @Published private(set) var isNetworkUnreachable = false
     /// 답장 하나가 막 노출된 직후, 다음 캐릭터의 입력중 표시가 뜨기 전까지의 짧은 정적 구간.
     /// 이 동안은 `nextReplyCharacter`가 nil을 돌려줘 인디케이터가 잠깐 사라진다.
     @Published private(set) var isRevealPaused = false
@@ -48,6 +49,10 @@ final class ChatViewModel: ObservableObject {
     private(set) var revealTask: Task<Void, Never>?
     @Published private var isSendQueued = false
     private var isTokenUsageStale = true
+    /// 네트워크 끊김 화면의 "재시도"에서 대화 기록을 처음부터 다시 불러와야 하는지. 이미 로드된
+    /// 대화 중간에 메시지 전송만 실패한 경우엔 다시 불러오면 summaryStore 진행 상태가 초기화되므로
+    /// true로 두지 않는다.
+    private var needsConversationReload = false
     /// 테스트에서 백그라운드 요약 저장이 끝나는 시점을 결정적으로 기다리기 위한 핸들.
     private(set) var pendingSummaryUpdateTask: Task<Void, Never>?
     /// 테스트에서 백그라운드 제목 저장이 끝나는 시점을 결정적으로 기다리기 위한 핸들.
@@ -105,6 +110,9 @@ final class ChatViewModel: ObservableObject {
                 return message.content
             }
             await summaryStore.restore(historicalUtterances: userUtterances)
+        } catch NetworkError.noConnection {
+            needsConversationReload = true
+            isNetworkUnreachable = true
         } catch {
             alertMessage = "대화를 불러오지 못했어요"
         }

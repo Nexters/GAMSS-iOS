@@ -43,6 +43,7 @@ private final class MockMemberRepository: MemberRepository {
 private final class MockConversationRepository: ConversationRepository {
     var stubbedSendResult: Result<SentMessage, Error> = .failure(SummaryError.inferenceFailed())
     var stubbedMessages: [Message] = []
+    var stubbedGetMessagesResult: Result<[Message], Error>?
     var sendGate: SendGate?
     var stubbedEndConversationResult: Result<Void, Error> = .success(())
     private(set) var sendCallCount = 0
@@ -68,6 +69,9 @@ private final class MockConversationRepository: ConversationRepository {
 
     func getMessages(conversationId: Int) async throws -> [Message] {
         getMessagesCallCount += 1
+        if let stubbedGetMessagesResult {
+            return try stubbedGetMessagesResult.get()
+        }
         return stubbedMessages
     }
 
@@ -516,6 +520,28 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.messages, [userMessage, characterMessage])
         let restored = await summaryStore.restoredHistories
         XCTAssertEqual(restored, [["사용자 발화"]], "재진입 복원은 사용자 발화만 summaryStore에 넘겨야 함")
+    }
+
+    func test_load_onNetworkFailure_setsNetworkUnreachable() async {
+        let repository = MockConversationRepository()
+        repository.stubbedGetMessagesResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+
+        await viewModel.load(conversationId: 10)
+
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
+        XCTAssertNil(viewModel.alertMessage, "네트워크 끊김은 알림창 대신 전용 화면으로 안내해야 함")
+    }
+
+    func test_load_onNonNetworkFailure_doesNotSetNetworkUnreachable() async {
+        let repository = MockConversationRepository()
+        repository.stubbedGetMessagesResult = .failure(SummaryError.inferenceFailed())
+        let viewModel = makeViewModel(repository: repository)
+
+        await viewModel.load(conversationId: 10)
+
+        XCTAssertFalse(viewModel.isNetworkUnreachable)
+        XCTAssertNotNil(viewModel.alertMessage)
     }
 
     func test_start_withConversationIdOnly_loadsHistory() async {
