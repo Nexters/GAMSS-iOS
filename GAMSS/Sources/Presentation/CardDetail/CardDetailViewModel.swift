@@ -13,9 +13,13 @@ final class CardDetailViewModel: ObservableObject {
     @Published private(set) var card: Card?
     @Published private(set) var isLoading = false
     @Published var alertMessage: String?
+    @Published private(set) var toastMessage: String?
 
     private let cardId: Int
     private let getCardUseCase: GetCardUseCase
+    private var toastDismissTask: Task<Void, Never>?
+
+    static let networkUnreachableToastMessage = "네트워크 연결을 확인해주세요."
 
     init(cardId: Int, getCardUseCase: GetCardUseCase) {
         self.cardId = cardId
@@ -35,6 +39,17 @@ final class CardDetailViewModel: ObservableObject {
             card = try await getCardUseCase.execute(cardId: cardId)
         } catch {
             alertMessage = "카드를 불러오지 못했어요"
+        }
+    }
+
+    /// "대화보기"가 네트워크 문제로 화면을 넘기지 못했을 때 호출한다.
+    func showNetworkUnreachableToast() {
+        toastMessage = Self.networkUnreachableToastMessage
+        toastDismissTask?.cancel()
+        toastDismissTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            guard !Task.isCancelled else { return }
+            self?.toastMessage = nil
         }
     }
 }

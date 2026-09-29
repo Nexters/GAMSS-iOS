@@ -123,4 +123,52 @@ final class ConversationHistoryViewModelTests: XCTestCase {
 
         XCTAssertNil(viewModel.quotedMessage(for: message))
     }
+
+    func test_canShowConversation_onSuccess_returnsTrueAndPreloadsMessages() async {
+        let repository = MockConversationRepository()
+        let messages = [
+            Message(id: 1, conversationId: 10, sender: .user, content: "안녕", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        ]
+        repository.stubbedMessagesResult = .success(messages)
+        let viewModel = makeViewModel(repository: repository)
+
+        let canShow = await viewModel.canShowConversation(conversationId: 10)
+
+        XCTAssertTrue(canShow)
+        XCTAssertEqual(viewModel.messages, messages)
+    }
+
+    func test_canShowConversation_onSuccess_avoidsRefetchWhenScreenLoads() async {
+        let repository = MockConversationRepository()
+        repository.stubbedMessagesResult = .success([
+            Message(id: 1, conversationId: 10, sender: .user, content: "안녕", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        ])
+        let viewModel = makeViewModel(repository: repository)
+        _ = await viewModel.canShowConversation(conversationId: 10)
+
+        await viewModel.loadMessagesIfNeeded(conversationId: 10)
+
+        XCTAssertEqual(repository.receivedConversationIds, [10], "미리 불러온 게 있으면 화면 진입 후 다시 조회하면 안 됨")
+    }
+
+    func test_canShowConversation_onNetworkFailure_returnsFalseWithoutSettingAlert() async {
+        let repository = MockConversationRepository()
+        repository.stubbedMessagesResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+
+        let canShow = await viewModel.canShowConversation(conversationId: 10)
+
+        XCTAssertFalse(canShow)
+        XCTAssertNil(viewModel.alertMessage, "네트워크 끊김은 화면 전환을 막는 것으로 안내하므로 alertMessage를 쓰지 않아야 함")
+    }
+
+    func test_canShowConversation_onNonNetworkFailure_returnsTrueSoScreenStillTransitions() async {
+        let repository = MockConversationRepository()
+        repository.stubbedMessagesResult = .failure(SummaryError.inferenceFailed())
+        let viewModel = makeViewModel(repository: repository)
+
+        let canShow = await viewModel.canShowConversation(conversationId: 10)
+
+        XCTAssertTrue(canShow, "네트워크 문제가 아니면 기존처럼 화면을 넘겨 그 화면의 alertMessage로 안내해야 함")
+    }
 }
