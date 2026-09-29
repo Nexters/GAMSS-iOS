@@ -302,6 +302,34 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertNotNil(viewModel.alertMessage)
     }
 
+    func test_send_onNetworkFailure_setsNetworkUnreachableAndRestoresInput() async {
+        let repository = MockConversationRepository()
+        repository.stubbedSendResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+        viewModel.input = "끊길 메시지"
+
+        await viewModel.send()
+
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
+        XCTAssertEqual(viewModel.input, "끊길 메시지", "실패했으니 작성 중이던 내용을 잃지 않아야 함")
+        XCTAssertNil(viewModel.pendingUserMessage)
+        XCTAssertNil(viewModel.alertMessage, "네트워크 끊김은 알림창 대신 전용 화면으로 안내해야 함")
+    }
+
+    func test_send_onNetworkFailure_withReplyTarget_keepsReplyTarget() async {
+        let repository = MockConversationRepository()
+        repository.stubbedSendResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+        let replyTarget = Message(id: 5, conversationId: 10, sender: .character(.anxiety), content: "안녕하세용", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        viewModel.startReply(to: replyTarget)
+        viewModel.input = "고마워"
+
+        await viewModel.send()
+
+        XCTAssertEqual(viewModel.replyTarget, replyTarget)
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
+    }
+
     func test_send_onFailure_doesNotOverwriteInputIfUserTypedSomethingNewWhileSending() async {
         let repository = MockConversationRepository()
         let gate = SendGate()
