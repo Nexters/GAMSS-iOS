@@ -63,7 +63,17 @@ struct CardDetailView: View {
                 ProgressView()
                     .tint(Color.colorWhite)
             }
+
+            if let toastMessage = viewModel.toastMessage {
+                VStack {
+                    Spacer()
+                    ToastView(message: toastMessage)
+                        .padding(.bottom, Spacing.spacing200)
+                }
+                .transition(.opacity)
+            }
         }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.toastMessage)
         .task {
             guard viewModel.card == nil else { return }
             await viewModel.loadCard()
@@ -103,7 +113,7 @@ struct CardDetailView: View {
             }
             .frame(width: 97)
         }
-        .disabled(viewModel.isLoading)
+        .disabled(viewModel.isLoading || conversationHistoryViewModel.isLoading)
     }
 
     private var closeButton: some View {
@@ -117,8 +127,16 @@ struct CardDetailView: View {
     }
 
     private func showConversation() {
-        withAnimation(.easeOut(duration: transitionDuration)) {
-            isShowingConversation = true
+        guard let conversationId = viewModel.card?.conversationId else { return }
+        Task {
+            let canShow = await conversationHistoryViewModel.canShowConversation(conversationId: conversationId)
+            guard canShow else {
+                viewModel.showNetworkUnreachableToast()
+                return
+            }
+            withAnimation(.easeOut(duration: transitionDuration)) {
+                isShowingConversation = true
+            }
         }
     }
 

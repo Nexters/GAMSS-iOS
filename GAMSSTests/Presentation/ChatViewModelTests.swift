@@ -43,6 +43,7 @@ private final class MockMemberRepository: MemberRepository {
 private final class MockConversationRepository: ConversationRepository {
     var stubbedSendResult: Result<SentMessage, Error> = .failure(SummaryError.inferenceFailed())
     var stubbedMessages: [Message] = []
+    var stubbedGetMessagesResult: Result<[Message], Error>?
     var sendGate: SendGate?
     var stubbedEndConversationResult: Result<Void, Error> = .success(())
     private(set) var sendCallCount = 0
@@ -68,6 +69,9 @@ private final class MockConversationRepository: ConversationRepository {
 
     func getMessages(conversationId: Int) async throws -> [Message] {
         getMessagesCallCount += 1
+        if let stubbedGetMessagesResult {
+            return try stubbedGetMessagesResult.get()
+        }
         return stubbedMessages
     }
 
@@ -92,7 +96,7 @@ private final class MockConversationRepository: ConversationRepository {
         fatalError("not used in this test")
     }
 
-    func searchConversations(_ text: String) async throws -> SearchChatResponseDTO {
+    func searchConversations(_ text: String, page: Int, size: Int) async throws -> ConversationPage {
         fatalError("not used in this test")
     }
 }
@@ -296,6 +300,34 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.pendingUserMessage)
         XCTAssertEqual(viewModel.input, "실패할 메시지", "실패하면 작성 중이던 내용을 잃지 않도록 복원되어야 함")
         XCTAssertNotNil(viewModel.alertMessage)
+    }
+
+    func test_send_onNetworkFailure_setsNetworkUnreachableAndRestoresInput() async {
+        let repository = MockConversationRepository()
+        repository.stubbedSendResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+        viewModel.input = "끊길 메시지"
+
+        await viewModel.send()
+
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
+        XCTAssertEqual(viewModel.input, "끊길 메시지", "실패했으니 작성 중이던 내용을 잃지 않아야 함")
+        XCTAssertNil(viewModel.pendingUserMessage)
+        XCTAssertNil(viewModel.alertMessage, "네트워크 끊김은 알림창 대신 전용 화면으로 안내해야 함")
+    }
+
+    func test_send_onNetworkFailure_withReplyTarget_keepsReplyTarget() async {
+        let repository = MockConversationRepository()
+        repository.stubbedSendResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+        let replyTarget = Message(id: 5, conversationId: 10, sender: .character(.anxiety), content: "안녕하세용", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        viewModel.startReply(to: replyTarget)
+        viewModel.input = "고마워"
+
+        await viewModel.send()
+
+        XCTAssertEqual(viewModel.replyTarget, replyTarget)
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
     }
 
     func test_send_onFailure_doesNotOverwriteInputIfUserTypedSomethingNewWhileSending() async {
@@ -516,6 +548,85 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.messages, [userMessage, characterMessage])
         let restored = await summaryStore.restoredHistories
         XCTAssertEqual(restored, [["사용자 발화"]], "재진입 복원은 사용자 발화만 summaryStore에 넘겨야 함")
+    }
+
+    func test_load_onNetworkFailure_setsNetworkUnreachable() async {
+        let repository = MockConversationRepository()
+        repository.stubbedGetMessagesResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+
+        await viewModel.load(conversationId: 10)
+
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
+        XCTAssertNil(viewModel.alertMessage, "네트워크 끊김은 알림창 대신 전용 화면으로 안내해야 함")
+    }
+
+    func test_load_onNonNetworkFailure_doesNotSetNetworkUnreachable() async {
+        let repository = MockConversationRepository()
+        repository.stubbedGetMessagesResult = .failure(SummaryError.inferenceFailed())
+        let viewModel = makeViewModel(repository: repository)
+
+        await viewModel.load(conversationId: 10)
+
+        XCTAssertFalse(viewModel.isNetworkUnreachable)
+        XCTAssertNotNil(viewModel.alertMessage)
+    }
+
+    func test_retryAfterNetworkFailure_afterLoadFailure_reloadsConversation() async {
+        let repository = MockConversationRepository()
+        repository.stubbedGetMessagesResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+        await viewModel.load(conversationId: 10)
+        XCTAssertTrue(viewModel.isNetworkUnreachable, "사전 조건: 네트워크 끊김 상태여야 함")
+
+        let userMessage = Message(id: 1, conversationId: 10, sender: .user, content: "복구됨", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        repository.stubbedGetMessagesResult = .success([userMessage])
+
+        await viewModel.retryAfterNetworkFailure()
+
+        XCTAssertFalse(viewModel.isNetworkUnreachable)
+        XCTAssertEqual(viewModel.messages, [userMessage])
+        XCTAssertEqual(repository.getMessagesCallCount, 2, "처음 실패 + 재시도, 총 2번 호출되어야 함")
+    }
+
+    func test_retryAfterNetworkFailure_afterSendFailure_doesNotReloadConversationButResends() async {
+        let repository = MockConversationRepository()
+        let existingMessage = Message(id: 1, conversationId: 10, sender: .user, content: "기존 메시지", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        repository.stubbedMessages = [existingMessage]
+        let viewModel = makeViewModel(repository: repository)
+        await viewModel.load(conversationId: 10)
+        XCTAssertEqual(repository.getMessagesCallCount, 1, "사전 조건")
+
+        repository.stubbedSendResult = .failure(NetworkError.noConnection)
+        viewModel.input = "재전송할 메시지"
+        await viewModel.send()
+        XCTAssertTrue(viewModel.isNetworkUnreachable, "사전 조건: 전송 실패로 네트워크 끊김 상태여야 함")
+
+        let sentMessage = Message(id: 2, conversationId: 10, sender: .user, content: "재전송할 메시지", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        repository.stubbedSendResult = .success(SentMessage(message: sentMessage, commentStatus: .done, comments: []))
+
+        await viewModel.retryAfterNetworkFailure()
+
+        XCTAssertFalse(viewModel.isNetworkUnreachable)
+        XCTAssertEqual(repository.getMessagesCallCount, 1, "전송만 실패했던 것이므로 대화 기록을 다시 불러오면 안 됨(요약 진행 상태 보존)")
+        XCTAssertEqual(viewModel.messages, [existingMessage, sentMessage])
+    }
+
+    func test_retryAfterNetworkFailure_resendsWithOriginalExcludedCharacters() async {
+        let repository = MockConversationRepository()
+        repository.stubbedSendResult = .failure(NetworkError.noConnection)
+        let pendingFirstMessage = PendingFirstMessage(content: "안녕", excludedCharacters: [.anger])
+        let viewModel = makeViewModel(repository: repository, pendingFirstMessage: pendingFirstMessage)
+        await viewModel.start()
+        XCTAssertTrue(viewModel.isNetworkUnreachable, "사전 조건")
+
+        let sentMessage = Message(id: 1, conversationId: 10, sender: .user, content: "안녕", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        repository.stubbedSendResult = .success(SentMessage(message: sentMessage, commentStatus: .done, comments: []))
+
+        await viewModel.retryAfterNetworkFailure()
+
+        XCTAssertEqual(repository.receivedExcludedCharacters, [.anger])
+        XCTAssertEqual(viewModel.messages, [sentMessage])
     }
 
     func test_start_withConversationIdOnly_loadsHistory() async {
@@ -1044,6 +1155,30 @@ final class ChatViewModelTests: XCTestCase {
 
         XCTAssertNotNil(viewModel.tokenUsageErrorMessage)
         XCTAssertNil(viewModel.tokenUsage)
+    }
+
+    func test_loadTokenUsage_onNetworkFailure_setsNetworkUnreachable() async {
+        let memberRepository = MockMemberRepository()
+        memberRepository.stubbedTokenUsageResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(memberRepository: memberRepository)
+
+        await viewModel.loadTokenUsage()
+
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
+        XCTAssertNil(viewModel.tokenUsageErrorMessage, "네트워크 끊김은 팝오버 에러 문구 대신 전용 화면으로 안내해야 함")
+    }
+
+    /// 대화 중 토큰 사용량 팝오버가 떠 있는 상태로 조회가 끊기면, 그 아래 깔리는
+    /// 네트워크 끊김 화면 위에 팝오버가 겹쳐 뜨지 않도록 팝오버도 같이 닫아야 함.
+    func test_loadTokenUsage_onNetworkFailure_dismissesTokenUsagePopover() async {
+        let memberRepository = MockMemberRepository()
+        memberRepository.stubbedTokenUsageResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(memberRepository: memberRepository)
+        viewModel.isTokenUsagePopoverPresented = true
+
+        await viewModel.loadTokenUsage()
+
+        XCTAssertFalse(viewModel.isTokenUsagePopoverPresented)
     }
 
     func test_send_commentStatusLimitExceeded_disablesComposerAndSetsPlaceholder() async {

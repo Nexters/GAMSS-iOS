@@ -41,6 +41,25 @@ final class ConversationHistoryViewModel: ObservableObject {
         await loadMessagesIfNeeded(conversationId: conversationId)
     }
 
+    /// "대화보기" 탭 시 화면을 넘기기 전에 먼저 호출한다. 네트워크가 끊겨 있으면 화면 전환
+    /// 자체를 막도록 false를 돌려준다 — 호출부가 화면 대신 토스트로 안내한다. 성공하면
+    /// messages가 이미 채워져 화면 진입 후 다시 조회하지 않는다. 그 외 실패는 기존처럼
+    /// 화면을 넘긴 뒤 alertMessage로 안내한다.
+    func canShowConversation(conversationId: Int) async -> Bool {
+        guard loadedConversationId != conversationId else { return true }
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            messages = try await getMessagesUseCase.execute(conversationId: conversationId)
+            loadedConversationId = conversationId
+            return true
+        } catch NetworkError.noConnection {
+            return false
+        } catch {
+            return true
+        }
+    }
+
     func quotedMessage(for message: Message) -> Message? {
         guard let repliesToMessageId = message.repliesToMessageId else { return nil }
         return messages.first { $0.id == repliesToMessageId }

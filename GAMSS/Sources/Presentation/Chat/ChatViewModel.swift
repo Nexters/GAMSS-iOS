@@ -29,6 +29,7 @@ final class ChatViewModel: ObservableObject {
     @Published var isTokenUsagePopoverPresented = false
     @Published var riskDetection: RiskDetection?
     @Published private(set) var isTokenExceeded = false
+    @Published private(set) var isNetworkUnreachable = false
     /// 답장 하나가 막 노출된 직후, 다음 캐릭터의 입력중 표시가 뜨기 전까지의 짧은 정적 구간.
     /// 이 동안은 `nextReplyCharacter`가 nil을 돌려줘 인디케이터가 잠깐 사라진다.
     @Published private(set) var isRevealPaused = false
@@ -48,6 +49,13 @@ final class ChatViewModel: ObservableObject {
     private(set) var revealTask: Task<Void, Never>?
     @Published private var isSendQueued = false
     private var isTokenUsageStale = true
+    /// 네트워크 끊김 화면의 "재시도"에서 대화 기록을 처음부터 다시 불러와야 하는지. 이미 로드된
+    /// 대화 중간에 메시지 전송만 실패한 경우엔 다시 불러오면 summaryStore 진행 상태가 초기화되므로
+    /// true로 두지 않는다.
+    private var needsConversationReload = false
+    /// 전송이 네트워크 문제로 실패했을 때, 재시도 시 같은 옵션으로 다시 보내기 위해 보관한다.
+    /// nil이면 재전송할 게 없다는 뜻(빈 Set과 구분하기 위해 옵셔널로 둔다).
+    private var pendingResendExcludedCharacters: Set<EmotionCharacter>?
     /// 테스트에서 백그라운드 요약 저장이 끝나는 시점을 결정적으로 기다리기 위한 핸들.
     private(set) var pendingSummaryUpdateTask: Task<Void, Never>?
     /// 테스트에서 백그라운드 제목 저장이 끝나는 시점을 결정적으로 기다리기 위한 핸들.
@@ -105,8 +113,30 @@ final class ChatViewModel: ObservableObject {
                 return message.content
             }
             await summaryStore.restore(historicalUtterances: userUtterances)
+        } catch NetworkError.noConnection {
+            needsConversationReload = true
+            isNetworkUnreachable = true
         } catch {
             alertMessage = "대화를 불러오지 못했어요"
+        }
+    }
+
+    /// 네트워크 끊김 화면의 "재시도" 버튼에서 호출한다. 실패했던 지점에 따라 필요한 것만
+    /// 다시 시도한다 — 전송만 실패했는데 대화 기록까지 다시 불러오면 summaryStore 진행
+    /// 상태가 초기화되기 때문이다.
+    func retryAfterNetworkFailure() async {
+        isNetworkUnreachable = false
+
+        if needsConversationReload, let conversationId {
+            needsConversationReload = false
+            await load(conversationId: conversationId)
+        }
+
+        await loadTokenUsage()
+
+        if let excludedCharacters = pendingResendExcludedCharacters {
+            pendingResendExcludedCharacters = nil
+            await send(excludedCharacters: excludedCharacters)
         }
     }
 
@@ -185,6 +215,9 @@ final class ChatViewModel: ObservableObject {
             tokenUsage = usage
             isTokenExceeded = usage.exceeded
             isTokenUsageStale = false
+        } catch NetworkError.noConnection {
+            isNetworkUnreachable = true
+            isTokenUsagePopoverPresented = false
         } catch {
             tokenUsageErrorMessage = "토큰 사용량을 불러오지 못했어요"
         }
@@ -236,6 +269,12 @@ final class ChatViewModel: ObservableObject {
             // self가 아니라 summaryStore를 직접 캡처해 화면을 나가도 저장은 끝까지 완료되게 한다.
             let summaryStore = summaryStore
             pendingSummaryUpdateTask = Task { await summaryStore.add(trimmed) }
+        } catch NetworkError.noConnection {
+            pendingUserMessage = nil
+            if self.replyTarget == nil { self.replyTarget = replyTarget }
+            if input.isEmpty { input = trimmed }
+            pendingResendExcludedCharacters = excludedCharacters
+            isNetworkUnreachable = true
         } catch let error as SendMessageValidationError {
             pendingUserMessage = nil
             if self.replyTarget == nil { self.replyTarget = replyTarget }

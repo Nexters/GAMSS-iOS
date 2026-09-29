@@ -34,7 +34,7 @@ struct MessageComposerView: View {
 
     /// 박스 하단 컨트롤 행(감정 트리거/전송 버튼)이 차지하는 높이 — expanded일 때 TextEditor
     /// 텍스트가 그 밑에 깔리지 않도록 그만큼 하단 여백을 예약한다.
-    private let controlsRowHeight: CGFloat = 40
+    private let controlsRowHeight: CGFloat = 48
     private var isExpanded: Bool { isFocused.wrappedValue }
 
     var body: some View {
@@ -75,7 +75,7 @@ struct MessageComposerView: View {
                 .padding(.leading, 11)
                 .padding(.trailing, Spacing.spacing200)
                 .padding(.top, 8)
-                .padding(.bottom, controlsRowHeight)
+                .padding(.bottom, isExpanded ? controlsRowHeight + Spacing.spacing300 : controlsRowHeight)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .disabled(isDisabled)
                 .focused(isFocused)
@@ -125,7 +125,7 @@ struct MessageComposerView: View {
             if isEmotionPickerOpen {
                 emotionGrid
                     // 박스 하단과 10px 겹치도록 controlsRowHeight보다 살짝 덜 밀어냄.
-                    .padding(.top, controlsRowHeight - 10)
+                    .padding(.top, controlsRowHeight - 18)
             }
         }
     }

@@ -85,6 +85,59 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.input.count, ConversationSummaryPolicy.maxMessageLength)
     }
 
+    func test_updateInput_overMaxLength_showsLengthLimitToast() {
+        let viewModel = makeViewModel()
+        let overLong = String(repeating: "가", count: ConversationSummaryPolicy.maxMessageLength + 10)
+
+        _ = viewModel.updateInput(overLong)
+
+        XCTAssertEqual(viewModel.toastMessage, ConversationSummaryPolicy.lengthLimitToastMessage)
+    }
+
+    func test_updateInput_withinMaxLength_doesNotShowToast() {
+        let viewModel = makeViewModel()
+
+        _ = viewModel.updateInput("안녕")
+
+        XCTAssertNil(viewModel.toastMessage)
+    }
+
+    func test_isSendDisabled_matchesToastMessage_atLengthLimit() {
+        let viewModel = makeViewModel()
+        let overLong = String(repeating: "가", count: ConversationSummaryPolicy.maxMessageLength + 10)
+
+        _ = viewModel.updateInput(overLong)
+
+        XCTAssertNotNil(viewModel.toastMessage)
+        XCTAssertTrue(viewModel.isSendDisabled)
+    }
+
+    /// 토스트는 2초 타이머로 자동으로 닫히지만(시간 기반이라 여기선 검증하지 않음),
+    /// 전송 가능 여부는 그 타이머와 무관하게 글자수만 보고 즉시 갱신된다.
+    func test_isSendDisabled_clearsImmediatelyBelowLimit() {
+        let viewModel = makeViewModel()
+        let overLong = String(repeating: "가", count: ConversationSummaryPolicy.maxMessageLength + 10)
+        _ = viewModel.updateInput(overLong)
+
+        _ = viewModel.updateInput(String(overLong.prefix(ConversationSummaryPolicy.maxMessageLength - 1)))
+
+        XCTAssertFalse(viewModel.isSendDisabled)
+    }
+
+    func test_isSendDisabled_trueWhenInputAtMaxLength() {
+        let viewModel = makeViewModel()
+        viewModel.input = String(repeating: "가", count: ConversationSummaryPolicy.maxMessageLength)
+
+        XCTAssertTrue(viewModel.isSendDisabled, "글자수가 최대 길이인 동안은 전송을 막아야 함")
+    }
+
+    func test_isSendDisabled_falseWhenInputBelowMaxLength() {
+        let viewModel = makeViewModel()
+        viewModel.input = String(repeating: "가", count: ConversationSummaryPolicy.maxMessageLength - 1)
+
+        XCTAssertFalse(viewModel.isSendDisabled)
+    }
+
     func test_isSendDisabled_trueWhenInputBlank() {
         let viewModel = makeViewModel()
         viewModel.input = "   "
@@ -134,6 +187,25 @@ final class HomeViewModelTests: XCTestCase {
         viewModel.toggleEmotion(.joy)
 
         XCTAssertTrue(viewModel.selectedEmotions.isEmpty, "전체 해제가 허용되어야 함")
+    }
+
+    func test_toggleEmotion_deselectingLast_showsEmotionRequiredToast() {
+        let viewModel = makeViewModel()
+        for emotion in EmotionCharacter.allCases where emotion != .joy {
+            viewModel.toggleEmotion(emotion)
+        }
+
+        viewModel.toggleEmotion(.joy)
+
+        XCTAssertEqual(viewModel.toastMessage, HomeViewModel.emotionRequiredToastMessage)
+    }
+
+    func test_toggleEmotion_deselectingNonLast_doesNotShowToast() {
+        let viewModel = makeViewModel()
+
+        viewModel.toggleEmotion(.joy)
+
+        XCTAssertNil(viewModel.toastMessage)
     }
 
     func test_isEmotionPickerOpen_defaultsToFalse() {

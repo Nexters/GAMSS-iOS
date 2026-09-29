@@ -119,107 +119,113 @@ struct ChatView: View {
         VStack(spacing: 0) {
             header
 
-            GeometryReader { geometry in
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: Spacing.spacing200) {
-                            ForEach(viewModel.messages) { message in
-                                MessageBubbleView(
-                                    message: message,
-                                    quotedMessage: viewModel.quotedMessage(for: message),
-                                    maxWidth: MessageBubbleLayout.maxBubbleWidth(
-                                        availableWidth: geometry.size.width,
-                                        containerPadding: containerPadding * 2
+            if viewModel.isNetworkUnreachable {
+                NetworkFailureView {
+                    Task { await viewModel.retryAfterNetworkFailure() }
+                }
+            } else {
+                GeometryReader { geometry in
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: Spacing.spacing200) {
+                                ForEach(viewModel.messages) { message in
+                                    MessageBubbleView(
+                                        message: message,
+                                        quotedMessage: viewModel.quotedMessage(for: message),
+                                        maxWidth: MessageBubbleLayout.maxBubbleWidth(
+                                            availableWidth: geometry.size.width,
+                                            containerPadding: containerPadding * 2
+                                        )
                                     )
-                                )
-                                .id(message.id)
-                                .onLongPressGesture {
-                                    if viewModel.startReply(to: message) {
-                                        isInputFocused = true
+                                    .id(message.id)
+                                    .onLongPressGesture {
+                                        if viewModel.startReply(to: message) {
+                                            isInputFocused = true
+                                        }
                                     }
                                 }
-                            }
 
-                            if let pendingUserMessage = viewModel.pendingUserMessage {
-                                MessageBubbleView(
-                                    pendingUserMessage: pendingUserMessage,
-                                    maxWidth: MessageBubbleLayout.maxBubbleWidth(
-                                        availableWidth: geometry.size.width,
-                                        containerPadding: containerPadding * 2
+                                if let pendingUserMessage = viewModel.pendingUserMessage {
+                                    MessageBubbleView(
+                                        pendingUserMessage: pendingUserMessage,
+                                        maxWidth: MessageBubbleLayout.maxBubbleWidth(
+                                            availableWidth: geometry.size.width,
+                                            containerPadding: containerPadding * 2
+                                        )
                                     )
+                                    .id(PendingUserMessage.scrollAnchorID)
+                                }
+
+                                if let nextReplyCharacter = viewModel.nextReplyCharacter {
+                                    TypingIndicatorView(emotion: nextReplyCharacter)
+                                        .id(TypingIndicatorView.scrollAnchorID)
+                                        .transition(.opacity)
+                                }
+
+                                Color.clear
+                                    .frame(height: 0)
+                                    .onAppear { viewModel.markAtBottom(true) }
+                                    .onDisappear { viewModel.markAtBottom(false) }
+                            }
+                            .animation(.easeOut(duration: 0.2), value: viewModel.nextReplyCharacter)
+                            .padding(.horizontal, containerPadding)
+                            .padding(.top, containerPadding)
+                        }
+                        .opacity(isMessageListPositioned ? 1 : 0)
+                        .simultaneousGesture(
+                            TapGesture().onEnded { isInputFocused = false }
+                        )
+                        .onChange(of: viewModel.messages) { oldValue, newValue in
+                            guard !oldValue.isEmpty else {
+                                positionMessageListForInitialLoad(proxy)
+                                return
+                            }
+                            if let last = newValue.last, viewModel.handleNewLastMessage(last) {
+                                scrollToBottom(proxy)
+                            }
+                        }
+                        .onChange(of: viewModel.pendingUserMessage) { _, _ in
+                            isMessageListPositioned = true
+                            scrollToBottom(proxy)
+                        }
+                        .onChange(of: viewModel.nextReplyCharacter) { _, _ in
+                            if viewModel.isAtBottom {
+                                scrollToBottom(proxy)
+                            }
+                        }
+                        .onReceive(keyboardWillChange) { notification in
+                            guard let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+                            let newHeight = max(0, UIScreen.main.bounds.height - frame.origin.y)
+                            guard newHeight != keyboardHeight else { return }
+                            keyboardHeight = newHeight
+                            if viewModel.isAtBottom {
+                                let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double) ?? 0.25
+                                scrollToBottom(proxy, animation: .easeInOut(duration: duration))
+                            }
+                        }
+                        .onChange(of: viewModel.replyTarget) { _, _ in
+                            if keyboardHeight > 0, viewModel.isAtBottom {
+                                scrollToBottom(proxy)
+                            }
+                        }
+                        .safeAreaInset(edge: .bottom, spacing: 0) {
+                            VStack(spacing: 0) {
+                                bottomIndicator(proxy: proxy)
+
+                                ChatComposerView(
+                                    text: $viewModel.input,
+                                    isSendDisabled: viewModel.isSendDisabled,
+                                    isSending: viewModel.isSending,
+                                    replyTargetLabel: viewModel.replyTarget.flatMap { QuotedReplyHeader.label(forQuotedSender: $0.sender) },
+                                    replyTargetContent: viewModel.replyTarget?.content,
+                                    onCancelReply: { viewModel.cancelReply() },
+                                    isDisabled: viewModel.isConversationEnded || viewModel.isTokenExceeded,
+                                    disabledPlaceholder: viewModel.composerDisabledPlaceholder,
+                                    onSend: { Task { await viewModel.send() } },
+                                    onTextChange: { viewModel.updateInput($0) },
+                                    isFocused: $isInputFocused
                                 )
-                                .id(PendingUserMessage.scrollAnchorID)
                             }
-
-                            if let nextReplyCharacter = viewModel.nextReplyCharacter {
-                                TypingIndicatorView(emotion: nextReplyCharacter)
-                                    .id(TypingIndicatorView.scrollAnchorID)
-                                    .transition(.opacity)
-                            }
-
-                            Color.clear
-                                .frame(height: 0)
-                                .onAppear { viewModel.markAtBottom(true) }
-                                .onDisappear { viewModel.markAtBottom(false) }
-                        }
-                        .animation(.easeOut(duration: 0.2), value: viewModel.nextReplyCharacter)
-                        .padding(.horizontal, containerPadding)
-                        .padding(.top, containerPadding)
-                    }
-                    .opacity(isMessageListPositioned ? 1 : 0)
-                    .simultaneousGesture(
-                        TapGesture().onEnded { isInputFocused = false }
-                    )
-                    .onChange(of: viewModel.messages) { oldValue, newValue in
-                        guard !oldValue.isEmpty else {
-                            positionMessageListForInitialLoad(proxy)
-                            return
-                        }
-                        if let last = newValue.last, viewModel.handleNewLastMessage(last) {
-                            scrollToBottom(proxy)
-                        }
-                    }
-                    .onChange(of: viewModel.pendingUserMessage) { _, _ in
-                        isMessageListPositioned = true
-                        scrollToBottom(proxy)
-                    }
-                    .onChange(of: viewModel.nextReplyCharacter) { _, _ in
-                        if viewModel.isAtBottom {
-                            scrollToBottom(proxy)
-                        }
-                    }
-                    .onReceive(keyboardWillChange) { notification in
-                        guard let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-                        let newHeight = max(0, UIScreen.main.bounds.height - frame.origin.y)
-                        guard newHeight != keyboardHeight else { return }
-                        keyboardHeight = newHeight
-                        if viewModel.isAtBottom {
-                            let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double) ?? 0.25
-                            scrollToBottom(proxy, animation: .easeInOut(duration: duration))
-                        }
-                    }
-                    .onChange(of: viewModel.replyTarget) { _, _ in
-                        if keyboardHeight > 0, viewModel.isAtBottom {
-                            scrollToBottom(proxy)
-                        }
-                    }
-                    .safeAreaInset(edge: .bottom, spacing: 0) {
-                        VStack(spacing: 0) {
-                            bottomIndicator(proxy: proxy)
-
-                            ChatComposerView(
-                                text: $viewModel.input,
-                                isSendDisabled: viewModel.isSendDisabled,
-                                isSending: viewModel.isSending,
-                                replyTargetLabel: viewModel.replyTarget.flatMap { QuotedReplyHeader.label(forQuotedSender: $0.sender) },
-                                replyTargetContent: viewModel.replyTarget?.content,
-                                onCancelReply: { viewModel.cancelReply() },
-                                isDisabled: viewModel.isConversationEnded || viewModel.isTokenExceeded,
-                                disabledPlaceholder: viewModel.composerDisabledPlaceholder,
-                                onSend: { Task { await viewModel.send() } },
-                                onTextChange: { viewModel.updateInput($0) },
-                                isFocused: $isInputFocused
-                            )
                         }
                     }
                 }

@@ -77,4 +77,13 @@ final class CardDetailViewModelTests: XCTestCase {
 
         XCTAssertTrue(viewModel.isLoadFailureAlert)
     }
+
+    func test_showNetworkUnreachableToast_setsToastMessage() {
+        let repository = MockCardRepository()
+        let viewModel = makeViewModel(repository: repository)
+
+        viewModel.showNetworkUnreachableToast()
+
+        XCTAssertEqual(viewModel.toastMessage, "네트워크 연결을 확인해주세요.")
+    }
 }

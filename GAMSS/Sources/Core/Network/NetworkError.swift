@@ -13,4 +13,5 @@ enum NetworkError: Error {
     case httpError(statusCode: Int)
     case decodingError
     case expiredToken
+    case noConnection
 }

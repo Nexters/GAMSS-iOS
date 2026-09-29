@@ -37,7 +37,7 @@ private final class MockConversationRepository: ConversationRepository {
         fatalError("not used in this test")
     }
 
-    func searchConversations(_ text: String) async throws -> SearchChatResponseDTO {
+    func searchConversations(_ text: String, page: Int, size: Int) async throws -> ConversationPage {
         fatalError("not used in this test")
     }
 }

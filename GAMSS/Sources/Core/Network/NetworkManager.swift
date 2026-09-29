@@ -26,7 +26,16 @@ extension NetworkRequesting {
 
 final class NetworkManager: NetworkRequesting {
     static let shared = NetworkManager()
-    
+
+    private static let connectivityErrorCodes: Set<URLError.Code> = [
+        .notConnectedToInternet,
+        .networkConnectionLost,
+        .timedOut,
+        .cannotConnectToHost,
+        .cannotFindHost,
+        .dataNotAllowed
+    ]
+
     private let session: URLSession
     private let decoder: JSONDecoder
     
@@ -49,9 +58,12 @@ final class NetworkManager: NetworkRequesting {
         let bodyString = urlRequest.httpBody.flatMap { String(data: $0, encoding: .utf8) } ?? "-"
         Log.debug("📤 \(endpoint.method.rawValue) \(endpoint.path) body: \(bodyString)")
 
-        let (data, response) = try await session.data(
-            for: urlRequest
-        )
+        let (data, response): (Data, URLResponse)
+        do {
+            (data, response) = try await session.data(for: urlRequest)
+        } catch let urlError as URLError where Self.connectivityErrorCodes.contains(urlError.code) {
+            throw NetworkError.noConnection
+        }
 
         if let jsonString = String(data: data, encoding: .utf8) {
             Log.debug("📦 \(endpoint.path) response: \(jsonString)")

@@ -39,7 +39,7 @@ private final class MockConversationRepository: ConversationRepository {
         fatalError("not used in this test")
     }
 
-    func searchConversations(_ text: String) async throws -> SearchChatResponseDTO {
+    func searchConversations(_ text: String, page: Int, size: Int) async throws -> ConversationPage {
         fatalError("not used in this test")
     }
 }
@@ -53,6 +53,17 @@ final class UpdateConversationTitleUseCaseTests: XCTestCase {
 
         XCTAssertEqual(repository.receivedConversationId, 10)
         XCTAssertEqual(repository.receivedTitle, "안녕")
+    }
+
+    func test_execute_truncatesTitleExceedingMaxLength() async throws {
+        let repository = MockConversationRepository()
+        let useCase = UpdateConversationTitleUseCase(conversationRepository: repository)
+        let longTitle = String(repeating: "가", count: 139)
+
+        try await useCase.execute(conversationId: 10, title: longTitle)
+
+        XCTAssertEqual(repository.receivedTitle?.count, UpdateConversationTitleUseCase.maxTitleLength)
+        XCTAssertEqual(repository.receivedTitle, String(longTitle.prefix(UpdateConversationTitleUseCase.maxTitleLength)))
     }
 
     func test_execute_propagatesRepositoryError() async {
