@@ -121,6 +121,25 @@ final class ChatViewModel: ObservableObject {
         }
     }
 
+    /// 네트워크 끊김 화면의 "재시도" 버튼에서 호출한다. 실패했던 지점에 따라 필요한 것만
+    /// 다시 시도한다 — 전송만 실패했는데 대화 기록까지 다시 불러오면 summaryStore 진행
+    /// 상태가 초기화되기 때문이다.
+    func retryAfterNetworkFailure() async {
+        isNetworkUnreachable = false
+
+        if needsConversationReload, let conversationId {
+            needsConversationReload = false
+            await load(conversationId: conversationId)
+        }
+
+        await loadTokenUsage()
+
+        if let excludedCharacters = pendingResendExcludedCharacters {
+            pendingResendExcludedCharacters = nil
+            await send(excludedCharacters: excludedCharacters)
+        }
+    }
+
     /// 입력창의 원시 입력값을 받아 정책에 맞게 정규화하고, 키보드를 내려야 하는지 돌려준다.
     func updateInput(_ rawValue: String) -> Bool {
         let result = ConversationSummaryPolicy.normalizeInput(rawValue)
