@@ -1072,6 +1072,17 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.tokenUsage)
     }
 
+    func test_loadTokenUsage_onNetworkFailure_setsNetworkUnreachable() async {
+        let memberRepository = MockMemberRepository()
+        memberRepository.stubbedTokenUsageResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(memberRepository: memberRepository)
+
+        await viewModel.loadTokenUsage()
+
+        XCTAssertTrue(viewModel.isNetworkUnreachable)
+        XCTAssertNil(viewModel.tokenUsageErrorMessage, "네트워크 끊김은 팝오버 에러 문구 대신 전용 화면으로 안내해야 함")
+    }
+
     func test_send_commentStatusLimitExceeded_disablesComposerAndSetsPlaceholder() async {
         let repository = MockConversationRepository()
         let sentMessage = Message(id: 1, conversationId: 10, sender: .user, content: "안녕", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
