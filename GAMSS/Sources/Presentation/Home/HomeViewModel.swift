@@ -52,10 +52,8 @@ final class HomeViewModel: ObservableObject {
         }
     }
 
-    /// 네트워크 끊김 화면의 "재시도" 버튼에서 호출한다. 상태를 초기화하고 진입 시 하던
-    /// 조회를 다시 시도한다.
+    /// 네트워크 끊김 화면의 "재시도" 버튼에서 호출한다. 진입 시 하던 조회를 다시 시도한다.
     func retryAfterNetworkFailure() async {
-        isNetworkUnreachable = false
         await loadProfileIfNeeded()
         await loadTokenUsage()
     }
@@ -103,6 +101,7 @@ final class HomeViewModel: ObservableObject {
         do {
             let usage = try await getTokenUsageUseCase.execute()
             isTokenExceeded = usage.exceeded
+            isNetworkUnreachable = false
         } catch NetworkError.noConnection {
             isNetworkUnreachable = true
         } catch {

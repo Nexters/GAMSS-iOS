@@ -612,6 +612,33 @@ final class ChatViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.messages, [existingMessage, sentMessage])
     }
 
+    /// 재전송이 실제로 끝나기 전까지는 끊김 화면을 계속 유지해야 한다(화면 깜빡임 방지).
+    func test_retryAfterNetworkFailure_beforeResendCompletes_staysNetworkUnreachable() async {
+        let repository = MockConversationRepository()
+        repository.stubbedSendResult = .failure(NetworkError.noConnection)
+        let viewModel = makeViewModel(repository: repository)
+        viewModel.input = "재전송할 메시지"
+        await viewModel.send()
+        XCTAssertTrue(viewModel.isNetworkUnreachable, "사전 조건")
+
+        let gate = SendGate()
+        repository.sendGate = gate
+        let sentMessage = Message(id: 2, conversationId: 10, sender: .user, content: "재전송할 메시지", repliesToMessageId: nil, createdAt: Date(timeIntervalSince1970: 0))
+        repository.stubbedSendResult = .success(SentMessage(message: sentMessage, commentStatus: .done, comments: []))
+
+        let retryTask = Task { await viewModel.retryAfterNetworkFailure() }
+        while repository.sendCallCount < 2 {
+            await Task.yield()
+        }
+
+        XCTAssertTrue(viewModel.isNetworkUnreachable, "재전송이 아직 끝나지 않았으면 끊김 화면을 유지해야 함")
+
+        await gate.open()
+        await retryTask.value
+
+        XCTAssertFalse(viewModel.isNetworkUnreachable)
+    }
+
     func test_retryAfterNetworkFailure_resendsWithOriginalExcludedCharacters() async {
         let repository = MockConversationRepository()
         repository.stubbedSendResult = .failure(NetworkError.noConnection)

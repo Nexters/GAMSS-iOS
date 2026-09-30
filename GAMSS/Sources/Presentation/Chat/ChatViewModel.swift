@@ -113,6 +113,7 @@ final class ChatViewModel: ObservableObject {
                 return message.content
             }
             await summaryStore.restore(historicalUtterances: userUtterances)
+            isNetworkUnreachable = false
         } catch NetworkError.noConnection {
             needsConversationReload = true
             isNetworkUnreachable = true
@@ -125,8 +126,6 @@ final class ChatViewModel: ObservableObject {
     /// 다시 시도한다 — 전송만 실패했는데 대화 기록까지 다시 불러오면 summaryStore 진행
     /// 상태가 초기화되기 때문이다.
     func retryAfterNetworkFailure() async {
-        isNetworkUnreachable = false
-
         if needsConversationReload, let conversationId {
             needsConversationReload = false
             await load(conversationId: conversationId)
@@ -215,6 +214,7 @@ final class ChatViewModel: ObservableObject {
             tokenUsage = usage
             isTokenExceeded = usage.exceeded
             isTokenUsageStale = false
+            isNetworkUnreachable = false
         } catch NetworkError.noConnection {
             isNetworkUnreachable = true
             isTokenUsagePopoverPresented = false
@@ -264,6 +264,7 @@ final class ChatViewModel: ObservableObject {
             )
             pendingUserMessage = nil
             seed(with: sent)
+            isNetworkUnreachable = false
 
             // 요약기(온디바이스 추론)가 끝날 때까지 다음 입력을 막지 않도록 백그라운드로 돌린다.
             // self가 아니라 summaryStore를 직접 캡처해 화면을 나가도 저장은 끝까지 완료되게 한다.
