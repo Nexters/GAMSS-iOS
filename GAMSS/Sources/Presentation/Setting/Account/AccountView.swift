@@ -81,6 +81,15 @@ struct AccountView: View {
                     ])
             }
         }
+        .overlay(alignment: .bottom) {
+            ToastView(message: viewModel.toastMessage ?? "")
+                .padding(.bottom, Spacing.spacing200)
+                .opacity(viewModel.toastMessage == nil ? 0 : 1)
+        }
+        .animation(
+            .easeInOut(duration: 0.2),
+            value: viewModel.toastMessage
+        )
         .hidesTabBar()
     }
     
