@@ -15,14 +15,17 @@ final class NicknameEditViewModel: ObservableObject {
 
     static let networkUnreachableToastMessage = "네트워크 연결을 확인해주세요"
 
+    private let currentNickname: String
     @Published private(set) var editingNickname: String = ""
     @Published private(set) var errorMessage: String?
     @Published private(set) var toastMessage: String?
 
     var isEnabledSaveButton: Bool {
         let length = editingNickname.count
-        return length >= NicknamePolicy.minimumLength
-            && length <= NicknamePolicy.maximumLength
+        
+        return editingNickname != currentNickname
+        && length >= NicknamePolicy.minimumLength
+        && length <= NicknamePolicy.maximumLength
     }
 
     init(
@@ -30,6 +33,7 @@ final class NicknameEditViewModel: ObservableObject {
         currentNickname: String = ""
     ) {
         self.updateNicknameUseCase = updateNicknameUseCase
+        self.currentNickname = currentNickname
         self.editingNickname = currentNickname
     }
 
