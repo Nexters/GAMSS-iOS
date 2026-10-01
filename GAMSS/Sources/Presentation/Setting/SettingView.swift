@@ -47,7 +47,7 @@ struct SettingView: View {
     private func settingItem(_ item: SettingItem) -> some View {
         let row = MenuListItemView(
             title: item.title,
-            badgeText: item == .notification ? "OFF" : nil,
+            badgeText: nil,
             trailingText: item == .appVersion ? Environment.appVersion : nil
         )
         
@@ -94,8 +94,6 @@ struct SettingView: View {
                     )
                 )
             )
-        case .notification:
-            Text("알림 설정 화면 이동")
         case .privacyPolicy, .appVersion:
             EmptyView()
         }
