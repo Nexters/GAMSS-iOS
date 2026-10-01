@@ -32,7 +32,6 @@ final class ArchiveDetailViewModel: ObservableObject {
 
     func load() async {
         isLoading = true
-        errorMessage = nil
         defer { isLoading = false }
 
         do {
