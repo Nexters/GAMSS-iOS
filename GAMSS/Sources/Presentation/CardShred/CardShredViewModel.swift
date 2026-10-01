@@ -19,12 +19,15 @@ enum CardShredMode: Hashable, Identifiable {
 final class CardShredViewModel: ObservableObject {
     @Published private(set) var step = 0
     @Published private(set) var isSubmitting = false
-    @Published var alertMessage: String?
+    @Published private(set) var toastMessage: String?
 
     private let mode: CardShredMode
     private let deleteCardUseCase: DeleteCardUseCase?
     private let deleteAllCardUseCase: DeleteAllCardUseCase?
     private let requiredSteps = 4
+    private var toastDismissTask: Task<Void, Never>?
+
+    static let shredFailureToastMessage = "파쇄에 실패했어요. 다시 시도해주세요"
 
     init(cardId: Int, deleteCardUseCase: DeleteCardUseCase) {
         self.mode = .single(cardId: cardId)
@@ -55,6 +58,10 @@ final class CardShredViewModel: ObservableObject {
         step += 1
     }
 
+    func reset() {
+        step = 0
+    }
+
     @discardableResult
     func shred() async -> Bool {
         guard isShredEnabled, !isSubmitting else { return false }
@@ -73,8 +80,17 @@ final class CardShredViewModel: ObservableObject {
             }
             return true
         } catch {
-            alertMessage = "기록을 파쇄하지 못했어요"
             return false
+        }
+    }
+
+    func showShredFailureToast() {
+        toastMessage = Self.shredFailureToastMessage
+        toastDismissTask?.cancel()
+        toastDismissTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            guard !Task.isCancelled else { return }
+            self?.toastMessage = nil
         }
     }
 }

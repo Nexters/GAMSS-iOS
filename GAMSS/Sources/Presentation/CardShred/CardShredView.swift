@@ -46,6 +46,15 @@ struct CardShredView: View {
             paperArea
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.horizontal, 27)
+                .overlay(alignment: .bottom) {
+                    ZStack {
+                        if let toastMessage = viewModel.toastMessage {
+                            ToastView(message: toastMessage)
+                                .transition(.opacity)
+                        }
+                    }
+                    .animation(.easeInOut(duration: 0.2), value: viewModel.toastMessage)
+                }
 
             shredButton
                 .padding(.horizontal, 18)
@@ -55,15 +64,6 @@ struct CardShredView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
         .hidesTabBar()
-        .alert(
-            viewModel.alertMessage ?? "",
-            isPresented: Binding(
-                get: { viewModel.alertMessage != nil },
-                set: { if !$0 { viewModel.alertMessage = nil } }
-            )
-        ) {
-            Button("확인", role: .cancel) {}
-        }
     }
 
     private var powerToggle: some View {
@@ -139,6 +139,12 @@ struct CardShredView: View {
                     let succeeded = await viewModel.shred()
                     if succeeded {
                         onComplete()
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.45)) {
+                            viewModel.reset()
+                        } completion: {
+                            viewModel.showShredFailureToast()
+                        }
                     }
                 }
             } else {
