@@ -24,6 +24,7 @@ final class ConversationListViewModel: ObservableObject {
     @Published var editedText: String = ""
     @Published var isSearching: Bool = false
     @Published private(set) var isSearchExecuted = false
+    @Published private(set) var isNetworkUnreachable = false
     
     @Published private var selectedConversations = Set<Int>()
     var isDeleteButtonEnabled: Bool {
@@ -51,8 +52,20 @@ final class ConversationListViewModel: ObservableObject {
         defer { isLoading = false }
         do {
             conversations = try await getIncompleteConversationsUseCase.execute()
+            isNetworkUnreachable = false
+        } catch NetworkError.noConnection {
+            isNetworkUnreachable = true
         } catch {
             alertMessage = "채팅방 목록을 불러오지 못했어요"
+        }
+    }
+
+    /// 네트워크 끊김 화면의 "재시도" 버튼에서 호출한다. 검색 중이었으면 검색을, 아니면 목록 조회를 다시 시도한다.
+    func retryAfterNetworkFailure() async {
+        if isSearching, !editedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            await searchText()
+        } else {
+            await load()
         }
     }
     
@@ -129,6 +142,9 @@ final class ConversationListViewModel: ObservableObject {
             hasMoreSearchResults = page.hasNextPage
             searchResults = page.items
             isSearchExecuted = true
+            isNetworkUnreachable = false
+        } catch NetworkError.noConnection {
+            isNetworkUnreachable = true
         } catch {
             alertMessage = error.localizedDescription
         }
@@ -154,6 +170,8 @@ final class ConversationListViewModel: ObservableObject {
             searchPage = page.page
             hasMoreSearchResults = page.hasNextPage
             searchResults.append(contentsOf: page.items)
+        } catch NetworkError.noConnection {
+            isNetworkUnreachable = true
         } catch {
             alertMessage = error.localizedDescription
         }

@@ -52,7 +52,11 @@ struct ConversationListView: View {
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
 
-            if isSearchResultEmpty {
+            if viewModel.isNetworkUnreachable {
+                NetworkFailureView {
+                    Task { await viewModel.retryAfterNetworkFailure() }
+                }
+            } else if isSearchResultEmpty {
                 ConversationSearchEmptyView()
                     .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
             } else {
