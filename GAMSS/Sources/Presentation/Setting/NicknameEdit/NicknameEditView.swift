@@ -73,6 +73,16 @@ struct NicknameEditView: View {
                         )
                 }
                 .disabled(!viewModel.isEnabledSaveButton)
+                .overlay(alignment: .top) {
+                    ZStack {
+                        if let toastMessage = viewModel.toastMessage {
+                            ToastView(message: toastMessage)
+                                .transition(.opacity)
+                        }
+                    }
+                    .alignmentGuide(.top) { $0[.bottom] + Spacing.spacing200 }
+                    .animation(.easeInOut(duration: 0.2), value: viewModel.toastMessage)
+                }
             }
             .padding(.horizontal, Spacing.spacing350)
             .padding(.bottom, 12)

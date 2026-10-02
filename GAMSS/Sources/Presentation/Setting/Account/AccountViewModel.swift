@@ -13,8 +13,10 @@ final class AccountViewModel: ObservableObject {
     private let logoutUseCase: LogoutUseCase
     private let deleteMemberUseCase: DeleteMemberUseCase
     private let userManager: UserManager
+    private var toastDismissTask: Task<Void, Never>?
     
     @Published var errorMessage: String?
+    @Published var toastMessage: String?
     
     init(
         logoutUseCase: LogoutUseCase,
@@ -29,6 +31,8 @@ final class AccountViewModel: ObservableObject {
     func deleteMember() async {
         do {
             try await deleteMemberUseCase.execute()
+        } catch NetworkError.noConnection {
+            showToast("네트워크 연결을 확인해주세요")
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -38,8 +42,20 @@ final class AccountViewModel: ObservableObject {
         do {
             try await logoutUseCase.logout()
             userManager.user = nil
+        } catch NetworkError.noConnection {
+            showToast("네트워크 연결을 확인해주세요")
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+    
+    private func showToast(_ message: String) {
+        toastMessage = message
+        toastDismissTask?.cancel()
+        toastDismissTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
+            self?.toastMessage = nil
         }
     }
 }

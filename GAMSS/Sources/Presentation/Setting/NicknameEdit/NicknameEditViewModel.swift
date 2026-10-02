@@ -8,16 +8,24 @@
 import Combine
 import Foundation
 
+@MainActor
 final class NicknameEditViewModel: ObservableObject {
     private let updateNicknameUseCase: UpdateNicknameUseCase
+    private var toastDismissTask: Task<Void, Never>?
 
+    static let networkUnreachableToastMessage = "네트워크 연결을 확인해주세요"
+
+    private let currentNickname: String
     @Published private(set) var editingNickname: String = ""
     @Published private(set) var errorMessage: String?
+    @Published private(set) var toastMessage: String?
 
     var isEnabledSaveButton: Bool {
         let length = editingNickname.count
-        return length >= NicknamePolicy.minimumLength
-            && length <= NicknamePolicy.maximumLength
+        
+        return editingNickname != currentNickname
+        && length >= NicknamePolicy.minimumLength
+        && length <= NicknamePolicy.maximumLength
     }
 
     init(
@@ -25,6 +33,7 @@ final class NicknameEditViewModel: ObservableObject {
         currentNickname: String = ""
     ) {
         self.updateNicknameUseCase = updateNicknameUseCase
+        self.currentNickname = currentNickname
         self.editingNickname = currentNickname
     }
 
@@ -44,9 +53,22 @@ final class NicknameEditViewModel: ObservableObject {
         do {
             try await updateNicknameUseCase.execute(editingNickname)
             return true
+        } catch NetworkError.noConnection {
+            showToast(Self.networkUnreachableToastMessage)
+            return false
         } catch {
             errorMessage = error.localizedDescription
             return false
+        }
+    }
+
+    private func showToast(_ message: String) {
+        toastMessage = message
+        toastDismissTask?.cancel()
+        toastDismissTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            guard !Task.isCancelled else { return }
+            self?.toastMessage = nil
         }
     }
 }

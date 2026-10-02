@@ -16,6 +16,7 @@ struct ArchiveDetailView: View {
     @State private var shredMode: CardShredMode?
     @State private var selectedNote: DropNote?
     @State private var isEmptyNotesModalPresented = false
+    @State private var isErrorAlertPresented = false
     
     private let title: String
     
@@ -84,12 +85,14 @@ struct ArchiveDetailView: View {
             }
             .alert(
                 viewModel.errorMessage ?? "",
-                isPresented: Binding(
-                    get: { viewModel.errorMessage != nil },
-                    set: { if !$0 { viewModel.errorMessage = nil } }
-                )
+                isPresented: $isErrorAlertPresented
             ) {
-                Button("확인", role: .cancel) {}
+                Button("확인", role: .cancel) {
+                    viewModel.errorMessage = nil
+                }
+            }
+            .onChange(of: viewModel.errorMessage) { _, newValue in
+                isErrorAlertPresented = newValue != nil
             }
             .task {
                 await viewModel.load()
@@ -122,7 +125,7 @@ struct ArchiveDetailView: View {
                     }
                 )
             }
-
+            
             if let note = selectedNote {
                 CardDetailView(
                     viewModel: CardDetailViewModel(
@@ -151,7 +154,7 @@ struct ArchiveDetailView: View {
                 .transition(.opacity)
                 .zIndex(1)
             }
-
+            
             if isEmptyNotesModalPresented {
                 ModalContainerView(isPresented: $isEmptyNotesModalPresented) {
                     ModalContentView(
@@ -169,7 +172,7 @@ struct ArchiveDetailView: View {
         .animation(.easeOut(duration: 0.12), value: selectedNote?.id)
         .hidesTabBar()
     }
-
+    
     private func makeShredViewModel(for mode: CardShredMode) -> CardShredViewModel {
         let cardRepository = DefaultCardRepository(networkManager: NetworkManager.shared)
         switch mode {

@@ -13,8 +13,7 @@ struct ConversationListEmptyView: View {
         Text("아직 나눈 대화가 없어요")
             .typography(.body3Regular)
             .foregroundStyle(Color.colorGray500)
-            .frame(maxWidth: .infinity)
-            .padding(.top, Spacing.spacing800)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

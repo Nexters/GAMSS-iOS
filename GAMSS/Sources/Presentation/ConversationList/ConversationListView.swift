@@ -52,63 +52,19 @@ struct ConversationListView: View {
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
 
-            dateHeader
-                .padding(.vertical, Spacing.spacing150)
-                .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
-
-            if !viewModel.isLoading && viewModel.displayedConversations.isEmpty {
-                ConversationListEmptyView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            if viewModel.isNetworkUnreachable {
+                NetworkFailureView {
+                    Task { await viewModel.retryAfterNetworkFailure() }
+                }
+            } else if isSearchResultEmpty {
+                ConversationSearchEmptyView()
                     .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
             } else {
-                VStack(spacing: 0) {
-                    ScrollView {
-                        LazyVStack(spacing: Spacing.spacing100) {
-                            ForEach(Array(viewModel.displayedConversations.enumerated()), id: \.element.id) { index, conversation in
-                                conversationRow(for: conversation)
-                                    .onAppear {
-                                        Task {
-                                            await viewModel.loadMoreIfNeeded(at: index)
-                                        }
-                                    }
-                            }
+                dateHeader
+                    .padding(.vertical, Spacing.spacing150)
+                    .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
 
-                            if viewModel.isLoading && !viewModel.displayedConversations.isEmpty {
-                                ProgressView()
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, Spacing.spacing200)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                    if viewModel.currentMode == .delete {
-                        Button {
-                            isDeleteConversationPresented = true
-                        } label: {
-                            Text("삭제하기")
-                                .typography(.body3Medium)
-                                .foregroundStyle(
-                                    viewModel.isDeleteButtonEnabled
-                                    ? Color.colorWhite
-                                    : Color.colorGray300
-                                )
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(
-                                    viewModel.isDeleteButtonEnabled
-                                    ? Color.colorRed
-                                    : Color.colorGray075
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-                        .padding(.top, Spacing.spacing200)
-                        .padding(.bottom, 10)
-                        .disabled(!viewModel.isDeleteButtonEnabled)
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
+                conversationListContent
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -157,6 +113,69 @@ struct ConversationListView: View {
                     ]
                 )
             }
+        }
+    }
+
+    private var isSearchResultEmpty: Bool {
+        viewModel.isSearchExecuted
+            && !viewModel.isLoading
+            && viewModel.displayedConversations.isEmpty
+    }
+
+    @ViewBuilder
+    private var conversationListContent: some View {
+        if !viewModel.isLoading && viewModel.displayedConversations.isEmpty {
+            ConversationListEmptyView()
+                .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
+        } else {
+            VStack(spacing: 0) {
+                ScrollView {
+                    LazyVStack(spacing: Spacing.spacing100) {
+                        ForEach(Array(viewModel.displayedConversations.enumerated()), id: \.element.id) { index, conversation in
+                            conversationRow(for: conversation)
+                                .onAppear {
+                                    Task {
+                                        await viewModel.loadMoreIfNeeded(at: index)
+                                    }
+                                }
+                        }
+
+                        if viewModel.isLoading && !viewModel.displayedConversations.isEmpty {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, Spacing.spacing200)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                if viewModel.currentMode == .delete {
+                    Button {
+                        isDeleteConversationPresented = true
+                    } label: {
+                        Text("삭제하기")
+                            .typography(.body3Medium)
+                            .foregroundStyle(
+                                viewModel.isDeleteButtonEnabled
+                                ? Color.colorWhite
+                                : Color.colorGray300
+                            )
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(
+                                viewModel.isDeleteButtonEnabled
+                                ? Color.colorRed
+                                : Color.colorGray075
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(.top, Spacing.spacing200)
+                    .padding(.bottom, 10)
+                    .disabled(!viewModel.isDeleteButtonEnabled)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
         }
     }
 
