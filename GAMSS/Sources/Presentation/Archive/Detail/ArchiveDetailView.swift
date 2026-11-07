@@ -36,6 +36,7 @@ struct ArchiveDetailView: View {
                         if viewModel.notes.isEmpty {
                             isEmptyNotesModalPresented = true
                         } else {
+                            DefaultAnalyticsTracker.shared.track(.archiveClear(emotion: viewModel.emotion))
                             shredMode = .all
                         }
                     } label: {
@@ -63,6 +64,7 @@ struct ArchiveDetailView: View {
                                     scene.scaleMode = .resizeFill
                                     scene.updateSize(proxy.size)
                                     scene.onSelectNote = { note in
+                                        DefaultAnalyticsTracker.shared.track(.archiveCardOpen(emotion: viewModel.emotion))
                                         withAnimation(.easeOut(duration: 0.12)) {
                                             selectedNote = note
                                         }
@@ -143,6 +145,7 @@ struct ArchiveDetailView: View {
                     },
                     onDiscard: {
                         let cardId = note.id
+                        DefaultAnalyticsTracker.shared.track(.archiveCardDiscard(emotion: viewModel.emotion))
                         shredMode = .single(cardId: cardId)
                         var transaction = Transaction()
                         transaction.disablesAnimations = true
