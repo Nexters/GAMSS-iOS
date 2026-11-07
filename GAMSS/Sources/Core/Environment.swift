@@ -54,6 +54,12 @@ public enum Environment {
     static let mixpanelToken: String = {
         return value(key: "MIXPANEL_TOKEN")
     }()
+
+    /// Mixpanel 이벤트에 붙는 환경 구분값 (`development`/`production`) — 개발/운영이 같은
+    /// Mixpanel 프로젝트를 쓰기 때문에, 토큰이 아니라 이 값으로 데이터를 나눠본다.
+    static let mixpanelEnvironment: String = {
+        return value(key: "MIXPANEL_ENVIRONMENT")
+    }()
 }
 
 // MARK: I/O 관련 코드

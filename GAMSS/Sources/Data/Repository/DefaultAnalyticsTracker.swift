@@ -18,6 +18,9 @@ final class DefaultAnalyticsTracker: AnalyticsTracking {
             trackAutomaticEvents: true
         )
         instance.useIPAddressForGeoLocation = false
+        // dev/QA와 운영이 같은 Mixpanel 프로젝트(토큰)를 쓰므로, 모든 이벤트에 자동으로
+        // 붙는 super property로 환경을 구분한다 — 대시보드에서 이 값으로 필터링한다.
+        instance.registerSuperProperties(["environment": Environment.mixpanelEnvironment])
     }
 
     func track(_ event: AnalyticsEvent) {
