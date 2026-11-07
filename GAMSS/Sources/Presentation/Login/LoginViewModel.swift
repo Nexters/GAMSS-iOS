@@ -12,11 +12,13 @@ import Foundation
 @MainActor
 final class LoginViewModel: ObservableObject {
     private let loginUseCase: LoginUseCase
+    private let analyticsTracker: AnalyticsTracking
     @Published private(set) var isLoading = false
     @Published var errorMessage: String?
-    
-    init(loginUseCase: LoginUseCase) {
+
+    init(loginUseCase: LoginUseCase, analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared) {
         self.loginUseCase = loginUseCase
+        self.analyticsTracker = analyticsTracker
     }
     
     func login(
@@ -38,6 +40,7 @@ final class LoginViewModel: ObservableObject {
             )
         } catch {
             errorMessage = error.localizedDescription
+            analyticsTracker.track(.loginFail)
         }
     }
 }

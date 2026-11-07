@@ -12,11 +12,13 @@ struct LoginView: View {
     @SwiftUI.Environment(LoginSession.self) private var loginState
     @StateObject private var viewModel: LoginViewModel
     @State private var currentNonce: String?
-    
-    init(viewModel: LoginViewModel) {
+    private let analyticsTracker: AnalyticsTracking
+
+    init(viewModel: LoginViewModel, analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared) {
         _viewModel = StateObject(
             wrappedValue: viewModel
         )
+        self.analyticsTracker = analyticsTracker
     }
     
     var body: some View {
@@ -36,6 +38,7 @@ struct LoginView: View {
                 .padding(.horizontal, 31)
             
             SignInWithAppleButton(.signIn) { request in
+                analyticsTracker.track(.loginClick)
                 let nonce = NonceGenerator.generate()
                 currentNonce = nonce
                 
@@ -62,8 +65,16 @@ struct LoginView: View {
                             nonce: nonce
                         )
                         loginState.value = LoginState.current
+                        if loginState.value == .loggedIn {
+                            analyticsTracker.track(.loginSuccess)
+                        }
                     }
                 case .failure(let error):
+                    if let authError = error as? ASAuthorizationError, authError.code == .canceled {
+                        analyticsTracker.track(.loginCancel)
+                    } else {
+                        analyticsTracker.track(.loginFail)
+                    }
                     Log.debug(error.localizedDescription)
                 }
             }
