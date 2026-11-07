@@ -49,6 +49,11 @@ public enum Environment {
     static let privacyPolicyURL: String = {
         return value(key: "PRIVACY_POLICY_URL")
     }()
+
+    /// Mixpanel 프로젝트 토큰
+    static let mixpanelToken: String = {
+        return value(key: "MIXPANEL_TOKEN")
+    }()
 }
 
 // MARK: I/O 관련 코드
