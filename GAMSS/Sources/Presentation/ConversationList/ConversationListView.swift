@@ -203,6 +203,7 @@ struct ConversationListView: View {
         switch viewModel.currentMode {
         case .normal:
             Button {
+                DefaultAnalyticsTracker.shared.track(.chatListCardClick)
                 selectedConversation = conversation
             } label: {
                 ConversationRowView(
