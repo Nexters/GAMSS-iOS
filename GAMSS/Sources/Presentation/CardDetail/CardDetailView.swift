@@ -137,6 +137,9 @@ struct CardDetailView: View {
                 viewModel.showNetworkUnreachableToast()
                 return
             }
+            if let emotion {
+                DefaultAnalyticsTracker.shared.track(.archiveConversationView(emotion: emotion))
+            }
             withAnimation(.easeOut(duration: transitionDuration)) {
                 isShowingConversation = true
             }
