@@ -22,17 +22,32 @@ final class CardResultViewModel: ObservableObject {
             case .readyToDiscard: nil
             }
         }
+
+        var analyticsValue: String {
+            switch self {
+            case .unfolded: ""
+            case .foldedOnce: "foldedonce"
+            case .readyToDiscard: "readytodiscard"
+            }
+        }
     }
 
     @Published private(set) var stage: FoldStage = .unfolded
     @Published private(set) var dragOffset: CGFloat = 0
 
+    private let analyticsTracker: AnalyticsTracking
+
     static let discardThreshold: CGFloat = 120
     static let dropOffset: CGFloat = 900
+
+    init(analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared) {
+        self.analyticsTracker = analyticsTracker
+    }
 
     func advanceStage() {
         guard let next = stage.next else { return }
         stage = next
+        analyticsTracker.track(.cardFoldStep(stage: next.analyticsValue))
     }
 
     func updateDrag(translationHeight: CGFloat) {

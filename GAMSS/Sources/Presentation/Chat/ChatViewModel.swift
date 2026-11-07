@@ -358,6 +358,13 @@ final class ChatViewModel: ObservableObject {
     func requestEndConversation() {
         guard canEndConversation else { return }
         isEndConfirmationPresented = true
+        analyticsTracker.track(.chatEndRequest)
+    }
+
+    /// 종료 확인 팝업의 "뒤로가기"에서 호출한다.
+    func cancelEndConfirmation() {
+        isEndConfirmationPresented = false
+        analyticsTracker.track(.chatEndCancel)
     }
 
     /// 종료 확인 팝업에서 "종료할래요"를 눌렀을 때. endConversation → createCard 순서로 호출한다.
@@ -365,6 +372,7 @@ final class ChatViewModel: ObservableObject {
     /// 실패해도 입력창은 다시 열어주지 않는다 — retryCreateCard()로만 재시도한다.
     func confirmEndConversation() async {
         guard let conversationId, !isEnding else { return }
+        analyticsTracker.track(.chatEndConfirm)
         isEnding = true
         defer { isEnding = false }
 
@@ -398,8 +406,10 @@ final class ChatViewModel: ObservableObject {
         let emotion = EmotionCharacter.dominant(in: messages)
         do {
             createdCard = try await createCardUseCase.execute(conversationId: conversationId, emotion: emotion, summary: summary)
+            analyticsTracker.track(.cardCreateSuccess)
         } catch {
             alertMessage = "카드를 만들지 못했어요. 다시 시도해주세요"
+            analyticsTracker.track(.cardCreateFail)
         }
     }
 
