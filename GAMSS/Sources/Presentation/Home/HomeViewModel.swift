@@ -27,15 +27,18 @@ final class HomeViewModel: ObservableObject {
     private let fetchMyProfileUseCase: FetchMyProfileUseCase
     private let getTokenUsageUseCase: GetTokenUsageUseCase
     private let userManager: UserManager
+    private let analyticsTracker: AnalyticsTracking
 
     init(
         fetchMyProfileUseCase: FetchMyProfileUseCase,
         getTokenUsageUseCase: GetTokenUsageUseCase,
-        userManager: UserManager = .shared
+        userManager: UserManager = .shared,
+        analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared
     ) {
         self.fetchMyProfileUseCase = fetchMyProfileUseCase
         self.getTokenUsageUseCase = getTokenUsageUseCase
         self.userManager = userManager
+        self.analyticsTracker = analyticsTracker
     }
 
     /// 화면 진입 시 1회 호출한다. 이미 프로필이 있으면(다른 화면에서 이미 불러온 경우 등)
@@ -136,6 +139,7 @@ final class HomeViewModel: ObservableObject {
         guard !selectedEmotions.isEmpty else { return }
 
         input = ""
+        analyticsTracker.track(.homeSubmit)
         pendingFirstMessage = PendingFirstMessage(
             content: trimmed,
             excludedCharacters: Set(EmotionCharacter.allCases).subtracting(selectedEmotions)
