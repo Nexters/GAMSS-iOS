@@ -60,4 +60,35 @@ final class HomeViewModelAnalyticsTests: XCTestCase {
 
         XCTAssertTrue(analyticsTracker.trackedEvents.isEmpty)
     }
+
+    func test_send_whenInputTooLong_doesNotTrack() {
+        let analyticsTracker = MockAnalyticsTracking()
+        let viewModel = HomeViewModel(
+            fetchMyProfileUseCase: MockFetchMyProfileUseCase(),
+            getTokenUsageUseCase: GetTokenUsageUseCase(memberRepository: MockMemberRepository()),
+            analyticsTracker: analyticsTracker
+        )
+        viewModel.input = String(repeating: "a", count: ConversationSummaryPolicy.maxMessageLength + 1)
+
+        viewModel.send()
+
+        XCTAssertTrue(analyticsTracker.trackedEvents.isEmpty)
+    }
+
+    func test_send_whenNoEmotionSelected_doesNotTrack() {
+        let analyticsTracker = MockAnalyticsTracking()
+        let viewModel = HomeViewModel(
+            fetchMyProfileUseCase: MockFetchMyProfileUseCase(),
+            getTokenUsageUseCase: GetTokenUsageUseCase(memberRepository: MockMemberRepository()),
+            analyticsTracker: analyticsTracker
+        )
+        for emotion in EmotionCharacter.allCases {
+            viewModel.toggleEmotion(emotion)
+        }
+        viewModel.input = "오늘 하루 있었던 일"
+
+        viewModel.send()
+
+        XCTAssertTrue(analyticsTracker.trackedEvents.isEmpty)
+    }
 }
