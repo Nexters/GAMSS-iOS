@@ -47,6 +47,7 @@ struct ArchiveView: View {
             ArchiveDetailView(
                 title: emotion.name,
                 viewModel: ArchiveDetailViewModel(
+                    emotion: emotion,
                     fetchCardsByDateUseCase: DefaultFetchCardsByDateUseCase(
                         cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared),
                         emotion: emotion

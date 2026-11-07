@@ -10,6 +10,7 @@ import SwiftUI
 struct CardDetailView: View {
     let onClose: () -> Void
     let onDiscard: () -> Void
+    let emotion: Emotion?
 
     @StateObject private var viewModel: CardDetailViewModel
     @StateObject private var conversationHistoryViewModel: ConversationHistoryViewModel
@@ -19,11 +20,13 @@ struct CardDetailView: View {
 
     init(
         viewModel: CardDetailViewModel,
+        emotion: Emotion? = nil,
         onClose: @escaping () -> Void,
         onDiscard: @escaping () -> Void
     ) {
         self.onClose = onClose
         self.onDiscard = onDiscard
+        self.emotion = emotion
         _viewModel = StateObject(wrappedValue: viewModel)
         _conversationHistoryViewModel = StateObject(
             wrappedValue: ConversationHistoryViewModel(

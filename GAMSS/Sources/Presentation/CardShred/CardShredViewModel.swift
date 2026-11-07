@@ -21,6 +21,7 @@ final class CardShredViewModel: ObservableObject {
     @Published private(set) var isSubmitting = false
     @Published private(set) var toastMessage: String?
 
+    let emotion: Emotion
     private let mode: CardShredMode
     private let deleteCardUseCase: DeleteCardUseCase?
     private let deleteAllCardUseCase: DeleteAllCardUseCase?
@@ -29,13 +30,22 @@ final class CardShredViewModel: ObservableObject {
 
     static let shredFailureToastMessage = "파쇄에 실패했어요. 다시 시도해주세요"
 
-    init(cardId: Int, deleteCardUseCase: DeleteCardUseCase) {
+    var analyticsScope: AnalyticsScope {
+        switch mode {
+        case .single: .single
+        case .all: .emotionAll
+        }
+    }
+
+    init(emotion: Emotion, cardId: Int, deleteCardUseCase: DeleteCardUseCase) {
+        self.emotion = emotion
         self.mode = .single(cardId: cardId)
         self.deleteCardUseCase = deleteCardUseCase
         self.deleteAllCardUseCase = nil
     }
 
-    init(deleteAllCardUseCase: DeleteAllCardUseCase) {
+    init(emotion: Emotion, deleteAllCardUseCase: DeleteAllCardUseCase) {
+        self.emotion = emotion
         self.mode = .all
         self.deleteCardUseCase = nil
         self.deleteAllCardUseCase = deleteAllCardUseCase

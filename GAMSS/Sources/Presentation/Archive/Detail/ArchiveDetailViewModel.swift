@@ -15,14 +15,17 @@ final class ArchiveDetailViewModel: ObservableObject {
     @Published private(set) var isLoading = true
     @Published var errorMessage: String?
 
+    let emotion: Emotion
     private let fetchCardsByDateUseCase: FetchCardsByDateUseCase
     private let deleteAllCardUseCase: DeleteAllCardUseCase
 
     init(
+        emotion: Emotion,
         fetchCardsByDateUseCase: FetchCardsByDateUseCase,
         deleteAllCardUseCase: DeleteAllCardUseCase,
         selectedMonth: Date = Date.now
     ) {
+        self.emotion = emotion
         self.fetchCardsByDateUseCase = fetchCardsByDateUseCase
         self.deleteAllCardUseCase = deleteAllCardUseCase
         self.selectedMonth = selectedMonth

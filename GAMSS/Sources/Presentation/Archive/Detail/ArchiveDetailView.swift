@@ -134,6 +134,7 @@ struct ArchiveDetailView: View {
                             cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared)
                         )
                     ),
+                    emotion: viewModel.emotion,
                     onClose: {
                         withAnimation(.easeOut(duration: 0.12)) {
                             selectedNote = nil
@@ -171,6 +172,7 @@ struct ArchiveDetailView: View {
         }
         .animation(.easeOut(duration: 0.12), value: selectedNote?.id)
         .hidesTabBar()
+        .trackScreen(.archiveDetail(emotion: viewModel.emotion))
     }
     
     private func makeShredViewModel(for mode: CardShredMode) -> CardShredViewModel {
@@ -178,11 +180,13 @@ struct ArchiveDetailView: View {
         switch mode {
         case .single(let cardId):
             return CardShredViewModel(
+                emotion: viewModel.emotion,
                 cardId: cardId,
                 deleteCardUseCase: DeleteCardUseCase(cardRepository: cardRepository)
             )
         case .all:
             return CardShredViewModel(
+                emotion: viewModel.emotion,
                 deleteAllCardUseCase: DefaultDeleteAllCardUseCase(cardRepository: cardRepository)
             )
         }

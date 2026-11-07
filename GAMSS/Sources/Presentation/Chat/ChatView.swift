@@ -111,6 +111,7 @@ struct ChatView: View {
         .onChange(of: viewModel.riskDetection) { _, newValue in
             if newValue != nil { isInputFocused = false }
         }
+        .trackScreen(.chatRoom)
     }
 
     private let tokenUsagePopoverTopOffset: CGFloat = Spacing.spacing400 + 24 + Spacing.spacing200
