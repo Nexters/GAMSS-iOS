@@ -47,6 +47,7 @@ struct OnboardingView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
         .animation(.easeInOut(duration: 0.25), value: currentPage)
+        .trackScreen(.onboarding)
     }
     
     private func pageContent(_ page: OnboardingPage) -> some View {

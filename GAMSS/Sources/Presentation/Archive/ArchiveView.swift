@@ -60,6 +60,7 @@ struct ArchiveView: View {
         .navigationDestination(isPresented: $isSettingPresented) {
             SettingView()
         }
+        .trackScreen(.archive)
     }
 }
 

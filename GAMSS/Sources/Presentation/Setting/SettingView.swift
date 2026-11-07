@@ -35,6 +35,7 @@ struct SettingView: View {
             SafariView(url: page.url)
                 .ignoresSafeArea()
         }
+        .trackScreen(.setting)
     }
     
     private var fullWidthDivider: some View {

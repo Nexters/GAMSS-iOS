@@ -68,6 +68,7 @@ struct HomeView: View {
         )) {
             Button("확인", role: .cancel) {}
         }
+        .trackScreen(.home)
     }
 
     private var mainContent: some View {

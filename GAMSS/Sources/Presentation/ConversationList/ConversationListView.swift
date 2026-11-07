@@ -114,6 +114,7 @@ struct ConversationListView: View {
                 )
             }
         }
+        .trackScreen(.chatList)
     }
 
     private var isSearchResultEmpty: Bool {
