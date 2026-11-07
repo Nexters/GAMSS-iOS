@@ -34,6 +34,7 @@ struct SettingView: View {
         .sheet(item: $presentedWebPage) { page in
             SafariView(url: page.url)
                 .ignoresSafeArea()
+                .trackScreen(.webview(page: page.page))
         }
         .trackScreen(.setting)
     }
@@ -102,13 +103,15 @@ struct SettingView: View {
     
     private func presentWeb(_ urlString: String) {
         guard let url = URL(string: urlString) else { return }
-        presentedWebPage = WebPage(url: url)
+        let page: WebviewPage = urlString == Environment.termsOfServiceURL ? .serviceTerms : .privacyPolicy
+        presentedWebPage = WebPage(url: url, page: page)
     }
 }
 
 private struct WebPage: Identifiable {
     let id = UUID()
     let url: URL
+    let page: WebviewPage
 }
 
 #Preview {
