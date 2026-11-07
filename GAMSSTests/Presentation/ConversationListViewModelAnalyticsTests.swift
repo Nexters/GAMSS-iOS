@@ -64,8 +64,9 @@ final class ConversationListViewModelAnalyticsTests: XCTestCase {
     }
 
     func test_searchText_belowMinimumLength_doesNotTrack() async {
+        // DefaultSearchConversationUseCase가 2자 미만이면 repository를 부르기 전에 자체적으로
+        // throw하므로, repository.searchResult는 이 테스트에서 쓰이지 않는다.
         let repository = MockConversationRepository()
-        repository.searchResult = .failure(ConversationError.invalidSearchKeyword)
         let analyticsTracker = MockAnalyticsTracking()
         let viewModel = makeViewModel(conversationRepository: repository, analyticsTracker: analyticsTracker)
         viewModel.editedText = "a"
