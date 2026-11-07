@@ -15,6 +15,7 @@
 		1B749C406C1D1BDD368D3CF0 /* EmotionCharacterServerKeyMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BC0A2F902BCC45D7A387D1 /* EmotionCharacterServerKeyMappingTests.swift */; };
 		1CE64E3A4D746FFBE391D949 /* DefaultConversationSummaryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032B0D990023EAA1E72E1E82 /* DefaultConversationSummaryStoreTests.swift */; };
 		1D8DF6DFC7E7383B9B8C5850 /* DefaultSummaryRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C099A15F7D9B1481998D0 /* DefaultSummaryRepositoryTests.swift */; };
+		1F4573F0D20D9971E0828F1C /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 52422A3F057BE747671AEDB5 /* Mixpanel */; };
 		228C37F390B54C3FA3796868 /* DefaultFetchMyProfileUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31305F9DDE03A304202C57 /* DefaultFetchMyProfileUseCaseTests.swift */; };
 		24EED49AAB4C574B02E9C077 /* EmotionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB4219C48B0B2A51FA9457C /* EmotionTests.swift */; };
 		26A84A0255BB5BB7139414C5 /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = 4F92A4F86371ED0E8E85D78F /* Tokenizers */; };
@@ -206,6 +207,7 @@
 				A8948FBCA4DF4E43F2C582EA /* Pods_GAMSS.framework in Frameworks */,
 				B80C3F0EF4C82027FE1BA377 /* Lottie in Frameworks */,
 				6D62719004B2E6D1D53E3CB9 /* FirebaseFirestore in Frameworks */,
+				1F4573F0D20D9971E0828F1C /* Mixpanel in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -521,6 +523,7 @@
 				4F92A4F86371ED0E8E85D78F /* Tokenizers */,
 				AC51C7CD8AAE4998794DF213 /* Lottie */,
 				82735CEB5F372593FF6244CF /* FirebaseFirestore */,
+				52422A3F057BE747671AEDB5 /* Mixpanel */,
 			);
 			productName = GAMSS;
 			productReference = 708F57F33003C651008DF433 /* GAMSS.app */;
@@ -576,6 +579,7 @@
 				70248D83300794C800857369 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				1D962D6FF84B1C7ED5A40445 /* XCRemoteSwiftPackageReference "swift-transformers" */,
 				91E9EADA9D9B87C6EA814A75 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				F740901FB8F62BD942AB73B4 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 708F57F43003C651008DF433 /* Products */;
@@ -1086,6 +1090,14 @@
 				minimumVersion = 4.4.0;
 			};
 		};
+		F740901FB8F62BD942AB73B4 /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mixpanel/mixpanel-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1093,6 +1105,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1D962D6FF84B1C7ED5A40445 /* XCRemoteSwiftPackageReference "swift-transformers" */;
 			productName = Tokenizers;
+		};
+		52422A3F057BE747671AEDB5 /* Mixpanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F740901FB8F62BD942AB73B4 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
+			productName = Mixpanel;
 		};
 		70248D84300794C800857369 /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;
