@@ -30,6 +30,7 @@
 		406BB4AAD1B77A703DD61BD3 /* RiskDetectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90261BDEC2055EA4C470456E /* RiskDetectionTests.swift */; };
 		49CAEB1FBF568E55C6C648B7 /* ConversationListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A26CAC1BD5FA5DF19D14615 /* ConversationListViewModelTests.swift */; };
 		4F5858CDEFD69E5C60230EB3 /* MessageComposerLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B130F9698EB71973DB961378 /* MessageComposerLayoutTests.swift */; };
+		54BD5BD952F9BADFF8D8D37F /* AnalyticsScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80151B5AE500B07B0A1740F4 /* AnalyticsScreenTests.swift */; };
 		573CFD0A1638F27B889EF865 /* SendMessageUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DDF78D0118869F3D9E1E269 /* SendMessageUseCaseTests.swift */; };
 		58652E08F4413DEA2016C082 /* MessageBubbleLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF457567BE11A68704DC4FE /* MessageBubbleLayoutTests.swift */; };
 		59B8600C3D1B9FD86501884C /* CreateCardUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F98692DAD0EFA3A362F10A /* CreateCardUseCaseTests.swift */; };
@@ -63,8 +64,10 @@
 		B98DBC4862AA60807F4EF8F0 /* DefaultRiskLexiconRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA2E1883400F97C94062B5D /* DefaultRiskLexiconRepositoryTests.swift */; };
 		BA7748118B0D2759E0F6A207 /* Pods_GAMSSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1CC8FA289575E4B98C41539 /* Pods_GAMSSTests.framework */; };
 		BE145A4B9FA13FAE3CDD748C /* ChatViewModelRiskDetectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB13C8E422F2136CAAAF20DF /* ChatViewModelRiskDetectionTests.swift */; };
+		BEC7D898797AE04AF0FD1EBC /* AnalyticsEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AF0E04BD950C10257FF7B2C /* AnalyticsEventTests.swift */; };
 		C63AB33F1424E4237FF76F6B /* SummaryErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162D28B313B7D3B6D79FE039 /* SummaryErrorTests.swift */; };
 		C8DE812C64C04B4EE47E3636 /* DefaultConversationRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBFC0FF1B12BFFA1F771ADA /* DefaultConversationRepositoryTests.swift */; };
+		CB6F526F685674727E3F26EA /* EmotionAnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38DFB3EF66428A7E69EB9EB /* EmotionAnalyticsTests.swift */; };
 		CC3333333333333333333333 /* FontWeightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222222222 /* FontWeightTests.swift */; };
 		CC604C7607382102024E0FA1 /* ConversationSummaryPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CCBD8A019CAA37319E7984 /* ConversationSummaryPolicyTests.swift */; };
 		CF4E42B9AC7C49293DFDE9D0 /* GetTokenUsageUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F13E1684066350D882C6B7B /* GetTokenUsageUseCaseTests.swift */; };
@@ -127,10 +130,12 @@
 		79F056320618BF2744EAC909 /* EmotionTestViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionTestViewModelTests.swift; sourceTree = "<group>"; };
 		7BB1A4112363D93ED3AD1598 /* EmotionCharacterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionCharacterTests.swift; sourceTree = "<group>"; };
 		7DAA522A6DCECC0B3666523C /* CreateMessageRequestDTOTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateMessageRequestDTOTests.swift; sourceTree = "<group>"; };
+		80151B5AE500B07B0A1740F4 /* AnalyticsScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalyticsScreenTests.swift; sourceTree = "<group>"; };
 		8157B3B43D20FE0CB425BCC3 /* ISO8601FlexibleParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ISO8601FlexibleParserTests.swift; sourceTree = "<group>"; };
 		83A67D7BECCB85A88C969AD7 /* GetMessagesUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetMessagesUseCaseTests.swift; sourceTree = "<group>"; };
 		8455FE41C4B6B1DFA19E1ED8 /* BundledRiskLexiconContentTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BundledRiskLexiconContentTests.swift; sourceTree = "<group>"; };
 		86563A77A8A674E7F050119E /* CommentRevealPolicyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CommentRevealPolicyTests.swift; sourceTree = "<group>"; };
+		8AF0E04BD950C10257FF7B2C /* AnalyticsEventTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalyticsEventTests.swift; sourceTree = "<group>"; };
 		90261BDEC2055EA4C470456E /* RiskDetectionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RiskDetectionTests.swift; sourceTree = "<group>"; };
 		90B8DCEEB8A4D7DDE8987325 /* DefaultCardRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultCardRepositoryTests.swift; sourceTree = "<group>"; };
 		917AD3CE2188BF3D5DCBEBF7 /* TokenUsageTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenUsageTests.swift; sourceTree = "<group>"; };
@@ -155,6 +160,7 @@
 		DA7199AB4FF706448FF5C6F3 /* DefaultMemberRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultMemberRepositoryTests.swift; sourceTree = "<group>"; };
 		DAA2E1883400F97C94062B5D /* DefaultRiskLexiconRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultRiskLexiconRepositoryTests.swift; sourceTree = "<group>"; };
 		DD4444444444444444444444 /* TypographyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TypographyTests.swift; sourceTree = "<group>"; };
+		E38DFB3EF66428A7E69EB9EB /* EmotionAnalyticsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionAnalyticsTests.swift; sourceTree = "<group>"; };
 		E3A3B1AD8D344DFAB396C504 /* CardResultViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardResultViewModelTests.swift; sourceTree = "<group>"; };
 		E5370238416571DC93C29121 /* MessageTimestampFormatterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageTimestampFormatterTests.swift; sourceTree = "<group>"; };
 		E7BE3E28AC7871B572DD4B7E /* Pods-GAMSSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GAMSSTests.release.xcconfig"; path = "Target Support Files/Pods-GAMSSTests/Pods-GAMSSTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -336,7 +342,6 @@
 				74BF85D65FE78E068CE73F9E /* RiskLexiconCacheTests.swift */,
 				DAA2E1883400F97C94062B5D /* DefaultRiskLexiconRepositoryTests.swift */,
 			);
-			name = Safety;
 			path = Safety;
 			sourceTree = "<group>";
 		};
@@ -359,7 +364,6 @@
 				6EDDC3C35E72B3C876A3079B /* RiskTermMatcherTests.swift */,
 				232692580F47AA3D634D1C5B /* DetectRiskInTextUseCaseTests.swift */,
 			);
-			name = Safety;
 			path = Safety;
 			sourceTree = "<group>";
 		};
@@ -417,7 +421,6 @@
 			isa = PBXGroup;
 			children = (
 			);
-			name = ConversationHistory;
 			path = ConversationHistory;
 			sourceTree = "<group>";
 		};
@@ -443,6 +446,9 @@
 				CEB4219C48B0B2A51FA9457C /* EmotionTests.swift */,
 				162D28B313B7D3B6D79FE039 /* SummaryErrorTests.swift */,
 				917AD3CE2188BF3D5DCBEBF7 /* TokenUsageTests.swift */,
+				8AF0E04BD950C10257FF7B2C /* AnalyticsEventTests.swift */,
+				80151B5AE500B07B0A1740F4 /* AnalyticsScreenTests.swift */,
+				E38DFB3EF66428A7E69EB9EB /* EmotionAnalyticsTests.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -665,9 +671,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GAMSS/Pods-GAMSS-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GAMSS/Pods-GAMSS-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -770,6 +780,9 @@
 				7E7867EE85C39CBE2B4A9213 /* RiskLexiconCacheTests.swift in Sources */,
 				B98DBC4862AA60807F4EF8F0 /* DefaultRiskLexiconRepositoryTests.swift in Sources */,
 				BE145A4B9FA13FAE3CDD748C /* ChatViewModelRiskDetectionTests.swift in Sources */,
+				BEC7D898797AE04AF0FD1EBC /* AnalyticsEventTests.swift in Sources */,
+				54BD5BD952F9BADFF8D8D37F /* AnalyticsScreenTests.swift in Sources */,
+				CB6F526F685674727E3F26EA /* EmotionAnalyticsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
