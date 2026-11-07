@@ -342,6 +342,7 @@
 				74BF85D65FE78E068CE73F9E /* RiskLexiconCacheTests.swift */,
 				DAA2E1883400F97C94062B5D /* DefaultRiskLexiconRepositoryTests.swift */,
 			);
+			name = Safety;
 			path = Safety;
 			sourceTree = "<group>";
 		};
@@ -364,6 +365,7 @@
 				6EDDC3C35E72B3C876A3079B /* RiskTermMatcherTests.swift */,
 				232692580F47AA3D634D1C5B /* DetectRiskInTextUseCaseTests.swift */,
 			);
+			name = Safety;
 			path = Safety;
 			sourceTree = "<group>";
 		};
@@ -421,6 +423,7 @@
 			isa = PBXGroup;
 			children = (
 			);
+			name = ConversationHistory;
 			path = ConversationHistory;
 			sourceTree = "<group>";
 		};
@@ -671,13 +674,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GAMSS/Pods-GAMSS-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GAMSS/Pods-GAMSS-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
