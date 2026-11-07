@@ -64,6 +64,7 @@ struct CardShredView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
         .hidesTabBar()
+        .trackScreen(.cardDelete(emotion: viewModel.emotion, scope: viewModel.analyticsScope))
     }
 
     private var powerToggle: some View {
@@ -182,6 +183,7 @@ private struct ShredStrip: Identifiable {
 #Preview("단일 삭제") {
     CardShredView(
         viewModel: CardShredViewModel(
+            emotion: .angry,
             cardId: 1,
             deleteCardUseCase: DeleteCardUseCase(
                 cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared)
@@ -196,9 +198,8 @@ private struct ShredStrip: Identifiable {
 #Preview("전체 삭제") {
     CardShredView(
         viewModel: CardShredViewModel(
-            deleteAllCardUseCase: DefaultDeleteAllCardUseCase(
-                cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared)
-            )
+            emotion: .angry,
+            deleteAllCardUseCase: DefaultDeleteAllCardUseCase(cardRepository: DefaultCardRepository(networkManager: NetworkManager.shared))
         ),
         stripImageName: "noteStrip",
         onBack: {},

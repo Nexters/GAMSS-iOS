@@ -9,9 +9,15 @@ import SwiftUI
 
 struct OnboardingView: View {
     var onFinish: () -> Void
-    
+    private let analyticsTracker: AnalyticsTracking
+
     @State private var currentPage: OnboardingPage = .talk
-    
+
+    init(analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared, onFinish: @escaping () -> Void) {
+        self.analyticsTracker = analyticsTracker
+        self.onFinish = onFinish
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             NavigationBarView(
@@ -20,6 +26,7 @@ struct OnboardingView: View {
             ) {
                 if currentPage.showsSkipButton {
                     Button {
+                        analyticsTracker.track(.onboardingSkip(step: currentPage.rawValue + 1))
                         onFinish()
                     } label: {
                         Text("건너뛰기")
@@ -28,18 +35,18 @@ struct OnboardingView: View {
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             pageContent(currentPage)
                 .id(currentPage)
                 .padding(.horizontal, 31)
-            
+
             Spacer()
-            
+
             pageIndicator
                 .padding(.bottom, Spacing.spacing400)
-            
+
             actionButton
                 .padding(.horizontal, Spacing.spacing350)
                 .padding(.bottom, Spacing.spacing400)
@@ -47,21 +54,22 @@ struct OnboardingView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
         .animation(.easeInOut(duration: 0.25), value: currentPage)
+        .trackScreen(.onboarding)
     }
-    
+
     private func pageContent(_ page: OnboardingPage) -> some View {
         VStack(spacing: Spacing.spacing600) {
             page.backgroundImage
                 .resizable()
                 .scaledToFit()
-            
+
             Text(page.title)
                 .typography(.subtitle2)
                 .foregroundStyle(Color.colorGray900)
                 .multilineTextAlignment(.center)
         }
     }
-    
+
     private var pageIndicator: some View {
         HStack(spacing: Spacing.spacing100) {
             ForEach(OnboardingPage.allCases) { page in
@@ -71,7 +79,7 @@ struct OnboardingView: View {
             }
         }
     }
-    
+
     private var actionButton: some View {
         Button {
             goToNextPage()
@@ -85,15 +93,18 @@ struct OnboardingView: View {
         .background(currentPage.buttonColor)
         .clipShape(RoundedRectangle(cornerRadius: Radius.radius200))
     }
-    
+
     private func goToNextPage() {
+        let step = currentPage.rawValue + 1
         guard let next = OnboardingPage(rawValue: currentPage.rawValue + 1) else {
+            analyticsTracker.track(.onboardingNext(step: step))
             onFinish()
             return
         }
+        analyticsTracker.track(.onboardingNext(step: step))
         currentPage = next
     }
-    
+
     private func goToPreviousPage() {
         guard let previous = OnboardingPage(rawValue: currentPage.rawValue - 1) else {
             return

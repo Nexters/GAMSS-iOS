@@ -38,7 +38,7 @@ struct ChatView: View {
                     subtitle: "감정 기록 생성 시 대화는 종료되며,\n더 이상 대화를 이어갈 수 없어요.",
                     actions: [
                         .init(title: "뒤로가기", style: .secondary, action: {
-                            viewModel.isEndConfirmationPresented = false
+                            viewModel.cancelEndConfirmation()
                         }),
                         .init(title: "기록 생성하기", style: .primary, action: {
                             viewModel.isEndConfirmationPresented = false
@@ -111,6 +111,7 @@ struct ChatView: View {
         .onChange(of: viewModel.riskDetection) { _, newValue in
             if newValue != nil { isInputFocused = false }
         }
+        .trackScreen(.chatRoom)
     }
 
     private let tokenUsagePopoverTopOffset: CGFloat = Spacing.spacing400 + 24 + Spacing.spacing200

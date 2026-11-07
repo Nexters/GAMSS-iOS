@@ -42,6 +42,7 @@ struct RootView: View {
                 } else {
                     OnboardingView {
                         hasCompletedOnboarding = true
+                        DefaultAnalyticsTracker.shared.track(.onboardingComplete)
                     }
                 }
             }

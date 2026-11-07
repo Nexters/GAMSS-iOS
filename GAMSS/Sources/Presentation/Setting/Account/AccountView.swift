@@ -91,6 +91,7 @@ struct AccountView: View {
             value: viewModel.toastMessage
         )
         .hidesTabBar()
+        .trackScreen(.accountInfo)
     }
     
     @ViewBuilder
