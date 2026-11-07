@@ -9,13 +9,17 @@ import XCTest
 @testable import GAMSS
 
 private final class MockConversationRepository: ConversationRepository {
+    var endConversationError: Error?
+
     func sendMessage(conversationId: Int?, content: String, repliesToMessageId: Int?, contextSummary: String?, excludedCharacters: Set<EmotionCharacter>) async throws -> SentMessage {
         fatalError("not used in this test")
     }
     func getMessages(conversationId: Int) async throws -> [Message] { fatalError("not used in this test") }
     func getIncompleteConversations() async throws -> [ConversationSummary] { fatalError("not used in this test") }
     func updateTitle(conversationId: Int, title: String) async throws {}
-    func endConversation(conversationId: Int) async throws {}
+    func endConversation(conversationId: Int) async throws {
+        if let endConversationError { throw endConversationError }
+    }
     func deleteConversations(_ ids: [Int]) async throws { fatalError("not used in this test") }
     func searchConversations(_ text: String, page: Int, size: Int) async throws -> ConversationPage { fatalError("not used in this test") }
 }
@@ -57,10 +61,10 @@ private final class MockAnalyticsTracking: AnalyticsTracking {
 @MainActor
 final class ChatViewModelEndConversationAnalyticsTests: XCTestCase {
     private func makeViewModel(
+        conversationRepository: MockConversationRepository = MockConversationRepository(),
         cardRepository: MockCardRepository = MockCardRepository(),
         analyticsTracker: MockAnalyticsTracking
     ) -> ChatViewModel {
-        let conversationRepository = MockConversationRepository()
         return ChatViewModel(
             sendMessageUseCase: SendMessageUseCase(conversationRepository: conversationRepository),
             getMessagesUseCase: GetMessagesUseCase(conversationRepository: conversationRepository),
@@ -115,5 +119,16 @@ final class ChatViewModelEndConversationAnalyticsTests: XCTestCase {
         await viewModel.confirmEndConversation()
 
         XCTAssertEqual(analyticsTracker.trackedEvents.map(\.name), ["chat_end_confirm", "card_create_fail"])
+    }
+
+    func test_confirmEndConversation_whenEndConversationFails_tracksOnlyChatEndConfirm() async {
+        let analyticsTracker = MockAnalyticsTracking()
+        let conversationRepository = MockConversationRepository()
+        conversationRepository.endConversationError = NetworkError.noConnection
+        let viewModel = makeViewModel(conversationRepository: conversationRepository, analyticsTracker: analyticsTracker)
+
+        await viewModel.confirmEndConversation()
+
+        XCTAssertEqual(analyticsTracker.trackedEvents.map(\.name), ["chat_end_confirm"])
     }
 }
