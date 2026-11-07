@@ -55,11 +55,10 @@ final class CardShredViewModelTests: XCTestCase {
             analyticsTracker: analyticsTracker
         )
 
-        viewModel.advance()
-        viewModel.advance()
+        for _ in 0..<4 { viewModel.advance() }
 
-        XCTAssertEqual(analyticsTracker.trackedEvents.map(\.name), ["card_shred_tap", "card_shred_tap"])
-        XCTAssertEqual(analyticsTracker.trackedEvents.map { $0.properties["tap_count"] as? Int }, [1, 2])
+        XCTAssertEqual(analyticsTracker.trackedEvents.map(\.name), Array(repeating: "card_shred_tap", count: 4))
+        XCTAssertEqual(analyticsTracker.trackedEvents.map { $0.properties["tap_count"] as? Int }, [1, 2, 3, 4])
         XCTAssertEqual(analyticsTracker.trackedEvents.first?.properties["emotion"] as? String, "anger")
         XCTAssertEqual(analyticsTracker.trackedEvents.first?.properties["scope"] as? String, "single")
     }
@@ -77,7 +76,8 @@ final class CardShredViewModelTests: XCTestCase {
 
         XCTAssertTrue(succeeded)
         XCTAssertEqual(analyticsTracker.trackedEvents.map(\.name), ["card_shred_tap", "card_shred_tap", "card_shred_tap", "card_shred_tap", "card_shred_tap", "card_shred_success"])
-        XCTAssertEqual(analyticsTracker.trackedEvents[4].properties["tap_count"] as? Int, 5)
+        let tapCounts = analyticsTracker.trackedEvents.prefix(5).map { $0.properties["tap_count"] as? Int }
+        XCTAssertEqual(tapCounts, [1, 2, 3, 4, 5])
         XCTAssertEqual(analyticsTracker.trackedEvents.last?.properties["scope"] as? String, "emotion_all")
     }
 

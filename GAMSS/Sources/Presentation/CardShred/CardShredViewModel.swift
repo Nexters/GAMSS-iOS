@@ -78,7 +78,7 @@ final class CardShredViewModel: ObservableObject {
     func advance() {
         guard step < requiredSteps else { return }
         step += 1
-        trackTap()
+        trackTap(tapCount: step)
     }
 
     func reset() {
@@ -91,7 +91,7 @@ final class CardShredViewModel: ObservableObject {
 
         isSubmitting = true
         defer { isSubmitting = false }
-        trackTap()
+        trackTap(tapCount: step + 1)
 
         do {
             switch mode {
@@ -121,10 +121,10 @@ final class CardShredViewModel: ObservableObject {
     }
 
     /// `advance()`(접는 탭)와 `shred()`(마지막 파쇄 탭) 양쪽에서 호출해, 탭마다 하나씩
-    /// `card_shred_tap`을 기록한다. `step`은 `advance()`에서만 바뀌므로, `shred()`가 호출되는
-    /// 탭(= requiredSteps번째를 넘는 탭)은 `step + 1`로 집계한다.
-    private func trackTap() {
-        let tapCount = isShredEnabled ? step + 1 : step
+    /// `card_shred_tap`을 기록한다. `isShredEnabled`(= `step >= requiredSteps`)는 마지막
+    /// `advance()` 호출 후와 그 다음 `shred()` 호출 양쪽에서 똑같이 true라 두 경우를
+    /// 구분하지 못하므로, 호출부가 직접 자신의 탭 번호를 넘긴다.
+    private func trackTap(tapCount: Int) {
         analyticsTracker.track(.cardShredTap(tapCount: tapCount, emotion: emotion, scope: analyticsScope))
     }
 }
