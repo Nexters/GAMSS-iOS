@@ -42,6 +42,7 @@
 		6D62719004B2E6D1D53E3CB9 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 82735CEB5F372593FF6244CF /* FirebaseFirestore */; };
 		70248D85300794C800857369 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 70248D84300794C800857369 /* FirebaseCrashlytics */; };
 		70248DCD300D429100857369 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 70248DCC300D429100857369 /* FirebaseAuth */; };
+		70EE595EAAC0B38E8BE19B6E /* ChatViewModelAnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5DB008338D73556ACEC43B /* ChatViewModelAnalyticsTests.swift */; };
 		7651811B18BCC6B77AD9FB7B /* ISO8601FlexibleParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8157B3B43D20FE0CB425BCC3 /* ISO8601FlexibleParserTests.swift */; };
 		7A4795156579633496BE4C49 /* TokenUsageResponseDTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5CDEAD6EF2BE204D413633 /* TokenUsageResponseDTOTests.swift */; };
 		7E7867EE85C39CBE2B4A9213 /* RiskLexiconCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BF85D65FE78E068CE73F9E /* RiskLexiconCacheTests.swift */; };
@@ -168,6 +169,7 @@
 		E3A3B1AD8D344DFAB396C504 /* CardResultViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardResultViewModelTests.swift; sourceTree = "<group>"; };
 		E5370238416571DC93C29121 /* MessageTimestampFormatterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageTimestampFormatterTests.swift; sourceTree = "<group>"; };
 		E7BE3E28AC7871B572DD4B7E /* Pods-GAMSSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GAMSSTests.release.xcconfig"; path = "Target Support Files/Pods-GAMSSTests/Pods-GAMSSTests.release.xcconfig"; sourceTree = "<group>"; };
+		EA5DB008338D73556ACEC43B /* ChatViewModelAnalyticsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatViewModelAnalyticsTests.swift; sourceTree = "<group>"; };
 		EAD22D6FD3BB2E8E689A52BE /* Pods-GAMSS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GAMSS.debug.xcconfig"; path = "Target Support Files/Pods-GAMSS/Pods-GAMSS.debug.xcconfig"; sourceTree = "<group>"; };
 		EB14F9D00BB8B80EFE9A40A4 /* Pods_GAMSS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GAMSS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC5CB066B802E5F028B99529 /* DeleteCardUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeleteCardUseCaseTests.swift; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 				E3A3B1AD8D344DFAB396C504 /* CardResultViewModelTests.swift */,
 				7FC78BA16408A4B1F740B5CC /* LoginViewModelAnalyticsTests.swift */,
 				C89416FAD4B8506E6BA9403B /* HomeViewModelAnalyticsTests.swift */,
+				EA5DB008338D73556ACEC43B /* ChatViewModelAnalyticsTests.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -790,6 +793,7 @@
 				CB6F526F685674727E3F26EA /* EmotionAnalyticsTests.swift in Sources */,
 				B897DF2F8C988E37A24B3C4F /* LoginViewModelAnalyticsTests.swift in Sources */,
 				BA6640AD1ED56E0F9C2DF400 /* HomeViewModelAnalyticsTests.swift in Sources */,
+				70EE595EAAC0B38E8BE19B6E /* ChatViewModelAnalyticsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
