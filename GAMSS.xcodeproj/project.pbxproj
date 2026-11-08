@@ -46,6 +46,7 @@
 		7E7867EE85C39CBE2B4A9213 /* RiskLexiconCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BF85D65FE78E068CE73F9E /* RiskLexiconCacheTests.swift */; };
 		85725D9CB0A442D0A3F763B7 /* CardResultViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A3B1AD8D344DFAB396C504 /* CardResultViewModelTests.swift */; };
 		86117F35EFDB7052CCD724B1 /* DeleteCardUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC5CB066B802E5F028B99529 /* DeleteCardUseCaseTests.swift */; };
+		880A16D61E3307ABD1DCC195 /* PaymentEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E530FF1D012F92F8EBF40C6 /* PaymentEndpointTests.swift */; };
 		8B5279C847420A4C0F2EF0D8 /* FetchTokenBalanceUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C33BC1396580F1CF9AB3C57 /* FetchTokenBalanceUseCaseTests.swift */; };
 		8F4E518B79C7B76223B098BA /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = 8E8487F478AF703D394C5EB6 /* Tokenizers */; };
 		91789B140656BAFCCDEB8E50 /* UpdateConversationTitleUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57C94EC067D840B994A661B /* UpdateConversationTitleUseCaseTests.swift */; };
@@ -98,6 +99,7 @@
 		02C393632C8A4F12516549D4 /* ConversationHistoryViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConversationHistoryViewModelTests.swift; sourceTree = "<group>"; };
 		032B0D990023EAA1E72E1E82 /* DefaultConversationSummaryStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultConversationSummaryStoreTests.swift; sourceTree = "<group>"; };
 		0ACAF83D4A9CCBB62EFD5C84 /* ConversationSummaryDTOTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConversationSummaryDTOTests.swift; sourceTree = "<group>"; };
+		0E530FF1D012F92F8EBF40C6 /* PaymentEndpointTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentEndpointTests.swift; sourceTree = "<group>"; };
 		154AB84FDB8FA1B084D0B67D /* MemberProfileResponseDTOTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MemberProfileResponseDTOTests.swift; sourceTree = "<group>"; };
 		162D28B313B7D3B6D79FE039 /* SummaryErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SummaryErrorTests.swift; sourceTree = "<group>"; };
 		16F98692DAD0EFA3A362F10A /* CreateCardUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateCardUseCaseTests.swift; sourceTree = "<group>"; };
@@ -367,6 +369,14 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
+		824EE30AD8E3D12C5EFDA101 /* Endpoint */ = {
+			isa = PBXGroup;
+			children = (
+				0E530FF1D012F92F8EBF40C6 /* PaymentEndpointTests.swift */,
+			);
+			path = Endpoint;
+			sourceTree = "<group>";
+		};
 		9DE2AA199C98D60F02BF57BA /* Safety */ = {
 			isa = PBXGroup;
 			children = (
@@ -484,6 +494,7 @@
 				7A27C7CF1F9DFCE4338AD7FC /* Repository */,
 				5BFD0AF9307B5D7A4F8263C8 /* DTO */,
 				76E3D75FEFB4BB71DEEBBA3A /* Safety */,
+				824EE30AD8E3D12C5EFDA101 /* Endpoint */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -786,6 +797,7 @@
 				3D1492499ABE3BB222CFD950 /* FetchPurchasableProductsUseCaseTests.swift in Sources */,
 				ACAE742998E5DA9FC1381004 /* PurchaseTokenUseCaseTests.swift in Sources */,
 				8B5279C847420A4C0F2EF0D8 /* FetchTokenBalanceUseCaseTests.swift in Sources */,
+				880A16D61E3307ABD1DCC195 /* PaymentEndpointTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
