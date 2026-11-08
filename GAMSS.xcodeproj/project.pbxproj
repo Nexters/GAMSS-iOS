@@ -74,6 +74,7 @@
 		CC604C7607382102024E0FA1 /* ConversationSummaryPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CCBD8A019CAA37319E7984 /* ConversationSummaryPolicyTests.swift */; };
 		CF4E42B9AC7C49293DFDE9D0 /* GetTokenUsageUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F13E1684066350D882C6B7B /* GetTokenUsageUseCaseTests.swift */; };
 		DC1369FEAE93D794107D5373 /* Color_GAMSSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596EE0F239D37460A7BA389D /* Color_GAMSSTests.swift */; };
+		DDD5A7058B8F4F4E9875C585 /* TokenPurchaseViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC202A4D54E477E9B31586C1 /* TokenPurchaseViewModelTests.swift */; };
 		E3A3BE7330A1CCAB9E144B41 /* DefaultEmotionAnalysisRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B816EE4A02D0B23C50F35FF9 /* DefaultEmotionAnalysisRepositoryTests.swift */; };
 		E834952DEF0A3543F80CB9A2 /* CardDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74B79C2FD49617A221FCA7C5 /* CardDetailViewModelTests.swift */; };
 		EA9C48AD6033E92B4734D506 /* MessageTimestampFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5370238416571DC93C29121 /* MessageTimestampFormatterTests.swift */; };
@@ -148,6 +149,7 @@
 		9F31305F9DDE03A304202C57 /* DefaultFetchMyProfileUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultFetchMyProfileUseCaseTests.swift; sourceTree = "<group>"; };
 		A17C099A15F7D9B1481998D0 /* DefaultSummaryRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultSummaryRepositoryTests.swift; sourceTree = "<group>"; };
 		AB13C8E422F2136CAAAF20DF /* ChatViewModelRiskDetectionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatViewModelRiskDetectionTests.swift; sourceTree = "<group>"; };
+		AC202A4D54E477E9B31586C1 /* TokenPurchaseViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenPurchaseViewModelTests.swift; sourceTree = "<group>"; };
 		B130F9698EB71973DB961378 /* MessageComposerLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageComposerLayoutTests.swift; sourceTree = "<group>"; };
 		B35175B780592B411BDD6B82 /* ConversationMessageDTOTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConversationMessageDTOTests.swift; sourceTree = "<group>"; };
 		B57C94EC067D840B994A661B /* UpdateConversationTitleUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateConversationTitleUseCaseTests.swift; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 				B130F9698EB71973DB961378 /* MessageComposerLayoutTests.swift */,
 				AB13C8E422F2136CAAAF20DF /* ChatViewModelRiskDetectionTests.swift */,
 				E3A3B1AD8D344DFAB396C504 /* CardResultViewModelTests.swift */,
+				AC202A4D54E477E9B31586C1 /* TokenPurchaseViewModelTests.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -806,6 +809,7 @@
 				880A16D61E3307ABD1DCC195 /* PaymentEndpointTests.swift in Sources */,
 				6E7E0F3FD422DC0DB048B594 /* PurchasedTokenBalanceStorageTests.swift in Sources */,
 				636B9EF59CD78D375E0245CE /* DefaultPurchaseRepositoryTests.swift in Sources */,
+				DDD5A7058B8F4F4E9875C585 /* TokenPurchaseViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
