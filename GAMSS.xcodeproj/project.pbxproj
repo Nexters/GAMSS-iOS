@@ -23,6 +23,7 @@
 		314A1F5B02F8DB4F55F4CC1B /* RiskLexiconDTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357489411EB50E4E3E610372 /* RiskLexiconDTOTests.swift */; };
 		34F9001EAF385037DD9F30BC /* TokenUsageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917AD3CE2188BF3D5DCBEBF7 /* TokenUsageTests.swift */; };
 		37CC583C76082794EA8ED2C3 /* ConversationListDateHeaderFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279ECD6F38C25ADFF48996F2 /* ConversationListDateHeaderFormatterTests.swift */; };
+		3D1492499ABE3BB222CFD950 /* FetchPurchasableProductsUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9198C6DB806A32CE128CEEBB /* FetchPurchasableProductsUseCaseTests.swift */; };
 		3D1B542CB60C3958D3F16702 /* EmotionCharacterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB1A4112363D93ED3AD1598 /* EmotionCharacterTests.swift */; };
 		3EA1E967FD5758D439B9562F /* EndConversationUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022C2DDBA5CC65F023C72625 /* EndConversationUseCaseTests.swift */; };
 		3EF2F6DB34A2276C2C9FD746 /* diary_samples.json in Resources */ = {isa = PBXBuildFile; fileRef = ED231F0A80BD3A4AF9E50BBC /* diary_samples.json */; };
@@ -45,6 +46,7 @@
 		7E7867EE85C39CBE2B4A9213 /* RiskLexiconCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BF85D65FE78E068CE73F9E /* RiskLexiconCacheTests.swift */; };
 		85725D9CB0A442D0A3F763B7 /* CardResultViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A3B1AD8D344DFAB396C504 /* CardResultViewModelTests.swift */; };
 		86117F35EFDB7052CCD724B1 /* DeleteCardUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC5CB066B802E5F028B99529 /* DeleteCardUseCaseTests.swift */; };
+		8B5279C847420A4C0F2EF0D8 /* FetchTokenBalanceUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C33BC1396580F1CF9AB3C57 /* FetchTokenBalanceUseCaseTests.swift */; };
 		8F4E518B79C7B76223B098BA /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = 8E8487F478AF703D394C5EB6 /* Tokenizers */; };
 		91789B140656BAFCCDEB8E50 /* UpdateConversationTitleUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57C94EC067D840B994A661B /* UpdateConversationTitleUseCaseTests.swift */; };
 		94A526BCCCD9DF730A39BF97 /* sample_sentences.json in Resources */ = {isa = PBXBuildFile; fileRef = D4BE9D664889F13369325DC9 /* sample_sentences.json */; };
@@ -55,6 +57,7 @@
 		A8FEE0AD9A4A60908DC5F5F1 /* CreateMessageRequestDTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DAA522A6DCECC0B3666523C /* CreateMessageRequestDTOTests.swift */; };
 		A9E97BA8DEC5EE7635B77D1F /* ChatComposerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5DF3BD54F67AE200949A44 /* ChatComposerViewTests.swift */; };
 		ABF5C91182F3B409C1AA9E8E /* GetMessagesUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A67D7BECCB85A88C969AD7 /* GetMessagesUseCaseTests.swift */; };
+		ACAE742998E5DA9FC1381004 /* PurchaseTokenUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7871FE141E4DB25F5DBB1A9 /* PurchaseTokenUseCaseTests.swift */; };
 		B32ACCF04698A89364EDDECE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 316EA002FAC5D3328796EF90 /* Foundation.framework */; };
 		B6A398A4770795906F2B9DD0 /* DefaultMemberRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7199AB4FF706448FF5C6F3 /* DefaultMemberRepositoryTests.swift */; };
 		B80C3F0EF4C82027FE1BA377 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = AC51C7CD8AAE4998794DF213 /* Lottie */; };
@@ -100,6 +103,7 @@
 		16F98692DAD0EFA3A362F10A /* CreateCardUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateCardUseCaseTests.swift; sourceTree = "<group>"; };
 		1A8F630A15A80F5FAB52F2C1 /* Pods-GAMSSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GAMSSTests.debug.xcconfig"; path = "Target Support Files/Pods-GAMSSTests/Pods-GAMSSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		1B68677BF01B5A8971B85AC4 /* QuotedReplyHeaderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuotedReplyHeaderTests.swift; sourceTree = "<group>"; };
+		1C33BC1396580F1CF9AB3C57 /* FetchTokenBalanceUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FetchTokenBalanceUseCaseTests.swift; sourceTree = "<group>"; };
 		232692580F47AA3D634D1C5B /* DetectRiskInTextUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DetectRiskInTextUseCaseTests.swift; sourceTree = "<group>"; };
 		279ECD6F38C25ADFF48996F2 /* ConversationListDateHeaderFormatterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConversationListDateHeaderFormatterTests.swift; sourceTree = "<group>"; };
 		316EA002FAC5D3328796EF90 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -133,6 +137,7 @@
 		90261BDEC2055EA4C470456E /* RiskDetectionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RiskDetectionTests.swift; sourceTree = "<group>"; };
 		90B8DCEEB8A4D7DDE8987325 /* DefaultCardRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultCardRepositoryTests.swift; sourceTree = "<group>"; };
 		917AD3CE2188BF3D5DCBEBF7 /* TokenUsageTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenUsageTests.swift; sourceTree = "<group>"; };
+		9198C6DB806A32CE128CEEBB /* FetchPurchasableProductsUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FetchPurchasableProductsUseCaseTests.swift; sourceTree = "<group>"; };
 		95BC0A2F902BCC45D7A387D1 /* EmotionCharacterServerKeyMappingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionCharacterServerKeyMappingTests.swift; sourceTree = "<group>"; };
 		9F31305F9DDE03A304202C57 /* DefaultFetchMyProfileUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultFetchMyProfileUseCaseTests.swift; sourceTree = "<group>"; };
 		A17C099A15F7D9B1481998D0 /* DefaultSummaryRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultSummaryRepositoryTests.swift; sourceTree = "<group>"; };
@@ -156,6 +161,7 @@
 		DD4444444444444444444444 /* TypographyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TypographyTests.swift; sourceTree = "<group>"; };
 		E3A3B1AD8D344DFAB396C504 /* CardResultViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardResultViewModelTests.swift; sourceTree = "<group>"; };
 		E5370238416571DC93C29121 /* MessageTimestampFormatterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageTimestampFormatterTests.swift; sourceTree = "<group>"; };
+		E7871FE141E4DB25F5DBB1A9 /* PurchaseTokenUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseTokenUseCaseTests.swift; sourceTree = "<group>"; };
 		E7BE3E28AC7871B572DD4B7E /* Pods-GAMSSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GAMSSTests.release.xcconfig"; path = "Target Support Files/Pods-GAMSSTests/Pods-GAMSSTests.release.xcconfig"; sourceTree = "<group>"; };
 		EAD22D6FD3BB2E8E689A52BE /* Pods-GAMSS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GAMSS.debug.xcconfig"; path = "Target Support Files/Pods-GAMSS/Pods-GAMSS.debug.xcconfig"; sourceTree = "<group>"; };
 		EB14F9D00BB8B80EFE9A40A4 /* Pods_GAMSS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GAMSS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -285,8 +291,19 @@
 				706922C280295136993F80AC /* GetCardUseCaseTests.swift */,
 				EC5CB066B802E5F028B99529 /* DeleteCardUseCaseTests.swift */,
 				6F13E1684066350D882C6B7B /* GetTokenUsageUseCaseTests.swift */,
+				4C491C88E1F33BA46CF078A3 /* Purchase */,
 			);
 			path = UseCase;
+			sourceTree = "<group>";
+		};
+		4C491C88E1F33BA46CF078A3 /* Purchase */ = {
+			isa = PBXGroup;
+			children = (
+				9198C6DB806A32CE128CEEBB /* FetchPurchasableProductsUseCaseTests.swift */,
+				E7871FE141E4DB25F5DBB1A9 /* PurchaseTokenUseCaseTests.swift */,
+				1C33BC1396580F1CF9AB3C57 /* FetchTokenBalanceUseCaseTests.swift */,
+			);
+			path = Purchase;
 			sourceTree = "<group>";
 		};
 		5BFD0AF9307B5D7A4F8263C8 /* DTO */ = {
@@ -766,6 +783,9 @@
 				7E7867EE85C39CBE2B4A9213 /* RiskLexiconCacheTests.swift in Sources */,
 				B98DBC4862AA60807F4EF8F0 /* DefaultRiskLexiconRepositoryTests.swift in Sources */,
 				BE145A4B9FA13FAE3CDD748C /* ChatViewModelRiskDetectionTests.swift in Sources */,
+				3D1492499ABE3BB222CFD950 /* FetchPurchasableProductsUseCaseTests.swift in Sources */,
+				ACAE742998E5DA9FC1381004 /* PurchaseTokenUseCaseTests.swift in Sources */,
+				8B5279C847420A4C0F2EF0D8 /* FetchTokenBalanceUseCaseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
