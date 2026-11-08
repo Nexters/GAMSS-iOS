@@ -39,6 +39,7 @@
 		66BC114B170E43E9C900F517 /* QuotedReplyHeaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B68677BF01B5A8971B85AC4 /* QuotedReplyHeaderTests.swift */; };
 		6C623FF45784475E33185488 /* CardResponseDTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD20B27264EF78F9AD4039D6 /* CardResponseDTOTests.swift */; };
 		6D62719004B2E6D1D53E3CB9 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 82735CEB5F372593FF6244CF /* FirebaseFirestore */; };
+		6E7E0F3FD422DC0DB048B594 /* PurchasedTokenBalanceStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FC19CA222F639C3117AC00 /* PurchasedTokenBalanceStorageTests.swift */; };
 		70248D85300794C800857369 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 70248D84300794C800857369 /* FirebaseCrashlytics */; };
 		70248DCD300D429100857369 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 70248DCC300D429100857369 /* FirebaseAuth */; };
 		7651811B18BCC6B77AD9FB7B /* ISO8601FlexibleParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8157B3B43D20FE0CB425BCC3 /* ISO8601FlexibleParserTests.swift */; };
@@ -126,6 +127,7 @@
 		6F13E1684066350D882C6B7B /* GetTokenUsageUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetTokenUsageUseCaseTests.swift; sourceTree = "<group>"; };
 		706922C280295136993F80AC /* GetCardUseCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetCardUseCaseTests.swift; sourceTree = "<group>"; };
 		708F57F33003C651008DF433 /* GAMSS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GAMSS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		71FC19CA222F639C3117AC00 /* PurchasedTokenBalanceStorageTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchasedTokenBalanceStorageTests.swift; sourceTree = "<group>"; };
 		74B79C2FD49617A221FCA7C5 /* CardDetailViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardDetailViewModelTests.swift; sourceTree = "<group>"; };
 		74BF85D65FE78E068CE73F9E /* RiskLexiconCacheTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RiskLexiconCacheTests.swift; sourceTree = "<group>"; };
 		7674D757C326ABEDB6302AA6 /* GAMSSTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GAMSSTests.swift; sourceTree = "<group>"; };
@@ -365,6 +367,7 @@
 				CDBFC0FF1B12BFFA1F771ADA /* DefaultConversationRepositoryTests.swift */,
 				DA7199AB4FF706448FF5C6F3 /* DefaultMemberRepositoryTests.swift */,
 				90B8DCEEB8A4D7DDE8987325 /* DefaultCardRepositoryTests.swift */,
+				71FC19CA222F639C3117AC00 /* PurchasedTokenBalanceStorageTests.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -798,6 +801,7 @@
 				ACAE742998E5DA9FC1381004 /* PurchaseTokenUseCaseTests.swift in Sources */,
 				8B5279C847420A4C0F2EF0D8 /* FetchTokenBalanceUseCaseTests.swift in Sources */,
 				880A16D61E3307ABD1DCC195 /* PaymentEndpointTests.swift in Sources */,
+				6E7E0F3FD422DC0DB048B594 /* PurchasedTokenBalanceStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
