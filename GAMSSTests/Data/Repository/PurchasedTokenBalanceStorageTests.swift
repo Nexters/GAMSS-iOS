@@ -37,4 +37,29 @@ final class PurchasedTokenBalanceStorageTests: XCTestCase {
         XCTAssertEqual(newBalance, 800_000)
         XCTAssertEqual(storage.currentBalance, 800_000)
     }
+
+    func test_addTokensIfNotProcessed_firstCall_creditsAndReturnsTrue() {
+        let result = storage.addTokensIfNotProcessed(transactionID: 12345, tokenAmount: 300_000)
+
+        XCTAssertTrue(result.credited)
+        XCTAssertEqual(result.balance, 300_000)
+        XCTAssertEqual(storage.currentBalance, 300_000)
+    }
+
+    func test_addTokensIfNotProcessed_sameTransactionIDTwice_creditsOnlyOnce() {
+        storage.addTokensIfNotProcessed(transactionID: 12345, tokenAmount: 300_000)
+        let secondResult = storage.addTokensIfNotProcessed(transactionID: 12345, tokenAmount: 300_000)
+
+        XCTAssertFalse(secondResult.credited)
+        XCTAssertEqual(secondResult.balance, 300_000)
+        XCTAssertEqual(storage.currentBalance, 300_000)
+    }
+
+    func test_addTokensIfNotProcessed_differentTransactionIDs_creditsBoth() {
+        storage.addTokensIfNotProcessed(transactionID: 1, tokenAmount: 300_000)
+        let result = storage.addTokensIfNotProcessed(transactionID: 2, tokenAmount: 500_000)
+
+        XCTAssertTrue(result.credited)
+        XCTAssertEqual(result.balance, 800_000)
+    }
 }

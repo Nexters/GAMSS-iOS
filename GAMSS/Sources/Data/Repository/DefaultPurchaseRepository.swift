@@ -8,7 +8,7 @@
 import Foundation
 import StoreKit
 
-final class DefaultPurchaseRepository: PurchaseRepository {
+actor DefaultPurchaseRepository: PurchaseRepository {
     private let networkManager: NetworkRequesting
     private let balanceStorage: PurchasedTokenBalanceStorage
     private var transactionListenerTask: Task<Void, Never>?
@@ -109,10 +109,12 @@ final class DefaultPurchaseRepository: PurchaseRepository {
 
     /// 검증(verified) → 지급 → finish() 순서를 지킨다. 지급 단계는 현재 Mock이며,
     /// 이 위치가 나중에 POST /api/payments/apple 실제 호출로 교체될 유일한 지점이다.
+    /// transaction.id 기준으로 중복 지급을 막는다 — 이미 처리된 트랜잭션이면 잔액은 그대로 두고
+    /// finish()만 호출해 Apple 쪽 대기열에서 정리한다.
     private func credit(transaction: Transaction, tokenAmount: Int) async -> PurchaseResult {
         // TODO: 백엔드 Apple 결제 검증 API(POST /api/payments/apple 등) 연동 — 현재는 Mock으로 지급 처리
-        let newBalance = balanceStorage.addTokens(tokenAmount)
+        let (credited, balance) = balanceStorage.addTokensIfNotProcessed(transactionID: transaction.id, tokenAmount: tokenAmount)
         await transaction.finish()
-        return .success(creditedTokens: tokenAmount, newBalance: newBalance)
+        return .success(creditedTokens: credited ? tokenAmount : 0, newBalance: balance)
     }
 }
