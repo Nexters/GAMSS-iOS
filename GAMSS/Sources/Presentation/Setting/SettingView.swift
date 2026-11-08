@@ -96,6 +96,23 @@ struct SettingView: View {
             )
         case .privacyPolicy, .appVersion:
             EmptyView()
+        #if DEBUG
+        case .debugTokenPurchase:
+            let purchaseRepository = DefaultPurchaseRepository(networkManager: NetworkManager.shared)
+            TokenPurchaseView(
+                viewModel: TokenPurchaseViewModel(
+                    fetchPurchasableProductsUseCase: FetchPurchasableProductsUseCase(
+                        purchaseRepository: purchaseRepository
+                    ),
+                    purchaseTokenUseCase: PurchaseTokenUseCase(
+                        purchaseRepository: purchaseRepository
+                    ),
+                    fetchTokenBalanceUseCase: FetchTokenBalanceUseCase(
+                        purchaseRepository: purchaseRepository
+                    )
+                )
+            )
+        #endif
         }
     }
     
