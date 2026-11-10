@@ -1,0 +1,75 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "ko_KR",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "GAMSS-IAP-Local",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "990",
+      "familyShareable" : false,
+      "internalID" : "token_300000",
+      "localizations" : [
+        {
+          "description" : "토큰 30만개",
+          "displayName" : "토큰 30만",
+          "locale" : "ko_KR"
+        }
+      ],
+      "productID" : "token_300000",
+      "referenceName" : "토큰 30만",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1500",
+      "familyShareable" : false,
+      "internalID" : "token_500000",
+      "localizations" : [
+        {
+          "description" : "토큰 50만개",
+          "displayName" : "토큰 50만",
+          "locale" : "ko_KR"
+        }
+      ],
+      "productID" : "token_500000",
+      "referenceName" : "토큰 50만",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "3000",
+      "familyShareable" : false,
+      "internalID" : "token_1000000",
+      "localizations" : [
+        {
+          "description" : "토큰 100만개",
+          "displayName" : "토큰 100만",
+          "locale" : "ko_KR"
+        }
+      ],
+      "productID" : "token_1000000",
+      "referenceName" : "토큰 100만",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "1",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "ko_KR",
+    "_storefront" : "KOR",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
