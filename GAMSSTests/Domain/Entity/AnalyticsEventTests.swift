@@ -50,7 +50,7 @@ final class AnalyticsEventTests: XCTestCase {
             .homeSubmit,
             .chatSend, .chatSendBlocked, .chatSendFail,
             .chatEndRequest, .chatEndCancel, .chatEndConfirm,
-            .cardCreateSuccess, .cardCreateFail, .cardFoldStep(stage: "foldedonce"),
+            .cardCreateSuccess, .cardCreateFail, .cardFoldStep(stage: "foldedonce"), .cardSetAside,
             .chatListCardClick, .chatSearch, .chatDeleteConfirm,
             .archiveMonthChange(emotion: .angry, yearMonth: "2026-11"),
             .archiveCardOpen(emotion: .angry),

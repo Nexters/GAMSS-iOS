@@ -60,6 +60,7 @@ final class CardResultViewModel: ObservableObject {
 
     func drop() {
         dragOffset = Self.dropOffset
+        analyticsTracker.track(.cardSetAside)
     }
 
     static func shouldDiscard(dragOffset: CGFloat) -> Bool {

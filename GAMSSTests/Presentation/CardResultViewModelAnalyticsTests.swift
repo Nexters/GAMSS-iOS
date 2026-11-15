@@ -41,4 +41,13 @@ final class CardResultViewModelAnalyticsTests: XCTestCase {
 
         XCTAssertEqual(analyticsTracker.trackedEvents.count, 2)
     }
+
+    func test_drop_tracksCardSetAside() {
+        let analyticsTracker = MockAnalyticsTracking()
+        let viewModel = CardResultViewModel(analyticsTracker: analyticsTracker)
+
+        viewModel.drop()
+
+        XCTAssertEqual(analyticsTracker.trackedEvents.map(\.name), ["card_set_aside"])
+    }
 }

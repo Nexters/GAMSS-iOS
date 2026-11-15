@@ -31,6 +31,7 @@ enum AnalyticsEvent {
     case cardCreateSuccess
     case cardCreateFail
     case cardFoldStep(stage: String)
+    case cardSetAside
 
     // 대화 목록
     case chatListCardClick
@@ -68,6 +69,7 @@ enum AnalyticsEvent {
         case .cardCreateSuccess: "card_create_success"
         case .cardCreateFail: "card_create_fail"
         case .cardFoldStep: "card_fold_step"
+        case .cardSetAside: "card_set_aside"
         case .chatListCardClick: "chat_list_card_click"
         case .chatSearch: "chat_search"
         case .chatDeleteConfirm: "chat_delete_confirm"
