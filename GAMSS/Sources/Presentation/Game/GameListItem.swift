@@ -19,17 +19,9 @@ enum GameListItem: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    /// 정식 썸네일이 들어오기 전까지 쓰는 기존 감정 일러스트.
     var illustrationImageName: String {
         switch self {
-        case .clicker: "cardEmotionAnger"
-        }
-    }
-
-    /// 카드 위에 겹쳐 놓는 액세서리. 눌러눌러는 키캡 에셋을 그대로 쓴다.
-    var accessoryImageName: String {
-        switch self {
-        case .clicker: "clicker"
+        case .clicker: "angry_clicker"
         }
     }
 }

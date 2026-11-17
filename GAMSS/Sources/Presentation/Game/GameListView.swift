@@ -7,34 +7,29 @@
 
 import SwiftUI
 
-/// 나중에 탭으로 붙일 미니게임 목록. 탭바 등록은 하지 않고 화면만 둔다.
 struct GameListView: View {
     @State private var isSettingPresented = false
     @State private var selectedGame: GameListItem?
 
     var body: some View {
-        ZStack {
-            paperBackground
+        VStack(alignment: .leading, spacing: 0) {
+            NavigationBarView(leading: .logo, trailing: {
+                Button {
+                    isSettingPresented = true
+                } label: {
+                    Image("gear")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.colorGray900)
+                }
+            })
 
-            VStack(alignment: .leading, spacing: 0) {
-                NavigationBarView(leading: .logo, trailing: {
-                    Button {
-                        isSettingPresented = true
-                    } label: {
-                        Image("gear")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.colorGray900)
-                    }
-                })
+            gameGrid
+                .padding(.top, 31)
+                .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
 
-                gameGrid
-                    .padding(.top, Spacing.spacing300)
-                    .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
-
-                Spacer(minLength: 0)
-            }
+            Spacer(minLength: 0)
         }
         .navigationDestination(item: $selectedGame) { game in
             destination(for: game)
@@ -42,17 +37,6 @@ struct GameListView: View {
         .navigationDestination(isPresented: $isSettingPresented) {
             SettingView()
         }
-    }
-
-    private var paperBackground: some View {
-        GeometryReader { geo in
-            Image("homeBackgroundPaper")
-                .resizable()
-                .scaledToFill()
-                .frame(width: geo.size.width, height: geo.size.height)
-                .clipped()
-        }
-        .ignoresSafeArea()
     }
 
     private var gameGrid: some View {

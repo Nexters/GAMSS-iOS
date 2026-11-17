@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct ClickerGameView: View {
     @StateObject private var viewModel: ClickerGameViewModel
@@ -17,42 +16,21 @@ struct ClickerGameView: View {
     }
 
     var body: some View {
-        ZStack {
-            paperBackground
+        VStack(spacing: 0) {
+            NavigationBarView(leading: .backButton, onBack: { dismiss() })
 
-            VStack(spacing: 0) {
-                NavigationBarView(leading: .backButton, onBack: { dismiss() })
+            statsRow
+                .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
+                .padding(.top, Spacing.spacing100)
 
-                statsRow
-                    .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
-                    .padding(.top, Spacing.spacing100)
+            Spacer(minLength: 0)
 
-                GeometryReader { geo in
-                    let boardSize = min(geo.size.width - Spacing.spacing800, geo.size.height - Spacing.spacing800, 268)
-                    ClickerPromptBoardView(prompt: viewModel.prompt, size: boardSize)
-                        .id(viewModel.prompt.id)
-                        .animation(.easeInOut(duration: 0.12), value: viewModel.prompt.id)
-                        .frame(width: geo.size.width, height: geo.size.height)
-                }
-
-                keysRow
-                    .padding(.bottom, Spacing.spacing700)
-            }
+            keysRow
+                .padding(.bottom, Spacing.spacing700)
         }
         .hidesTabBar()
         .onAppear(perform: viewModel.start)
         .onDisappear(perform: viewModel.stop)
-    }
-
-    private var paperBackground: some View {
-        GeometryReader { geo in
-            Image("homeBackgroundPaper")
-                .resizable()
-                .scaledToFill()
-                .frame(width: geo.size.width, height: geo.size.height)
-                .clipped()
-        }
-        .ignoresSafeArea()
     }
 
     private var statsRow: some View {
@@ -77,8 +55,6 @@ struct ClickerGameView: View {
                 .monospacedDigit()
                 .foregroundStyle(Color.colorGray900)
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("남은 시간 \(viewModel.formattedTime)")
     }
 
     private var scoreBox: some View {
@@ -92,7 +68,6 @@ struct ClickerGameView: View {
                 RoundedRectangle(cornerRadius: Radius.radius050)
                     .stroke(Color.colorGray900, lineWidth: 1.5)
             )
-            .accessibilityLabel("점수 \(viewModel.score)점")
     }
 
     private var restartColumn: some View {
@@ -107,34 +82,27 @@ struct ClickerGameView: View {
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("다시하기")
     }
 
     private var keysRow: some View {
         HStack {
             Spacer(minLength: 0)
             ClickerKeycapView(
-                style: .pink,
-                syllable: viewModel.prompt.syllable,
                 isEnabled: viewModel.isPlaying,
-                action: { handleTap(.pink) }
+                action: handleTap
             )
             Spacer(minLength: Spacing.spacing400)
             ClickerKeycapView(
-                style: .blue,
-                syllable: viewModel.prompt.syllable,
                 isEnabled: viewModel.isPlaying,
-                action: { handleTap(.blue) }
+                action: handleTap
             )
             Spacer(minLength: 0)
         }
         .padding(.horizontal, Spacing.spacing400)
     }
 
-    private func handleTap(_ style: ClickerKeyStyle) {
-        let isCorrect = viewModel.tap(style)
-        let generator = UIImpactFeedbackGenerator(style: isCorrect ? .light : .rigid)
-        generator.impactOccurred()
+    private func handleTap() {
+        viewModel.tap()
     }
 }
 
