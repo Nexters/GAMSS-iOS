@@ -72,6 +72,12 @@ struct MainTabView: View {
             }
             .tabItem { tabLabel(for: .chat) }
             .tag(MainTab.chat)
+            
+            tabNavigationStack {
+                GameListView()
+            }
+            .tabItem { tabLabel(for: .game) }
+            .tag(MainTab.game)
         }
     }
 
