@@ -26,41 +26,61 @@ private final class MockNetworkRequesting: NetworkRequesting {
 }
 
 final class DefaultPurchaseRepositoryTests: XCTestCase {
-    func test_fetchTokenAmount_withMatchingProductId_returnsTokenAmount() async throws {
-        let network = MockNetworkRequesting()
-        network.stubbedData = Data("""
-        {"success":true,"data":[{"productId":"token_300000","tokenAmount":300000},{"productId":"token_500000","tokenAmount":500000}],"error":null}
-        """.utf8)
-        let repository = DefaultPurchaseRepository(networkManager: network)
-
-        let tokenAmount = try await repository.fetchTokenAmount(for: "token_500000")
-
-        XCTAssertEqual(tokenAmount, 500_000)
-        XCTAssertEqual(network.lastEndpoint?.path, "/api/payments/products")
-    }
-
-    func test_fetchTokenAmount_withNoMatchingProductId_returnsNil() async throws {
-        let network = MockNetworkRequesting()
-        network.stubbedData = Data("""
-        {"success":true,"data":[{"productId":"token_300000","tokenAmount":300000}],"error":null}
-        """.utf8)
-        let repository = DefaultPurchaseRepository(networkManager: network)
-
-        let tokenAmount = try await repository.fetchTokenAmount(for: "token_unknown")
-
-        XCTAssertNil(tokenAmount)
-    }
-
     func test_fetchTokenBalance_returnsBalanceFromStorage() async throws {
         let network = MockNetworkRequesting()
         let userDefaults = UserDefaults(suiteName: #file)!
         userDefaults.removePersistentDomain(forName: #file)
         let storage = PurchasedTokenBalanceStorage(userDefaults: userDefaults)
-        storage.addTokens(300_000)
+        storage.setBalance(300_000)
         let repository = DefaultPurchaseRepository(networkManager: network, balanceStorage: storage)
 
         let balance = try await repository.fetchTokenBalance()
 
         XCTAssertEqual(balance, PurchasedTokenBalance(balance: 300_000))
+    }
+
+    func test_purchaseResult_forPurchaseInvalid_failsAndFinishes() {
+        let error = NetworkError.httpError(statusCode: 400, code: "PURCHASE_INVALID")
+
+        let (result, shouldFinish) = DefaultPurchaseRepository.purchaseResult(for: error)
+
+        XCTAssertTrue(shouldFinish)
+        guard case .failed = result else { return XCTFail("expected .failed, got \(result)") }
+    }
+
+    func test_purchaseResult_forPurchaseCancelled_failsAndFinishes() {
+        let error = NetworkError.httpError(statusCode: 409, code: "PURCHASE_CANCELLED")
+
+        let (result, shouldFinish) = DefaultPurchaseRepository.purchaseResult(for: error)
+
+        XCTAssertTrue(shouldFinish)
+        guard case .failed = result else { return XCTFail("expected .failed, got \(result)") }
+    }
+
+    func test_purchaseResult_forProductUnavailable_failsWithoutFinishing() {
+        let error = NetworkError.httpError(statusCode: 409, code: "PAYMENT_PRODUCT_UNAVAILABLE")
+
+        let (result, shouldFinish) = DefaultPurchaseRepository.purchaseResult(for: error)
+
+        XCTAssertFalse(shouldFinish)
+        guard case .failed = result else { return XCTFail("expected .failed, got \(result)") }
+    }
+
+    func test_purchaseResult_forStoreUnavailable_failsWithoutFinishing() {
+        let error = NetworkError.httpError(statusCode: 503, code: "PAYMENT_STORE_UNAVAILABLE")
+
+        let (result, shouldFinish) = DefaultPurchaseRepository.purchaseResult(for: error)
+
+        XCTAssertFalse(shouldFinish)
+        guard case .failed = result else { return XCTFail("expected .failed, got \(result)") }
+    }
+
+    func test_purchaseResult_forNonHTTPError_failsWithoutFinishing() {
+        let error = NetworkError.decodingError
+
+        let (result, shouldFinish) = DefaultPurchaseRepository.purchaseResult(for: error)
+
+        XCTAssertFalse(shouldFinish)
+        guard case .failed = result else { return XCTFail("expected .failed, got \(result)") }
     }
 }

@@ -10,6 +10,7 @@ import Foundation
 enum PaymentEndpoint: Endpoint {
     case fetchProducts
     case fetchAccountToken
+    case verifyPurchase(ApplePaymentRequestDTO)
 
     var path: String {
         switch self {
@@ -17,6 +18,8 @@ enum PaymentEndpoint: Endpoint {
             return "/api/payments/products"
         case .fetchAccountToken:
             return "/api/payments/account-token"
+        case .verifyPurchase:
+            return "/api/payments/apple"
         }
     }
 
@@ -24,6 +27,8 @@ enum PaymentEndpoint: Endpoint {
         switch self {
         case .fetchProducts, .fetchAccountToken:
             return .get
+        case .verifyPurchase:
+            return .post
         }
     }
 
@@ -31,6 +36,8 @@ enum PaymentEndpoint: Endpoint {
         switch self {
         case .fetchProducts, .fetchAccountToken:
             return []
+        case let .verifyPurchase(request):
+            return [.body(request)]
         }
     }
 

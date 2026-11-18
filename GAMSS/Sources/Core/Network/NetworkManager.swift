@@ -101,7 +101,7 @@ final class NetworkManager: NetworkRequesting {
                     Message: \(apiError?.message ?? "No error message")
                     """)
 
-            throw NetworkError.httpError(statusCode: response.statusCode)
+            throw NetworkError.httpError(statusCode: response.statusCode, code: apiError?.code)
         }
 
         do {
