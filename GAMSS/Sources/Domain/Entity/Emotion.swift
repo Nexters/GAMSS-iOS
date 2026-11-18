@@ -40,4 +40,23 @@ extension Emotion {
             return "까칠"
         }
     }
+
+    /// 분석 이벤트 속성값 — `GRUMPY`(까칠) rawValue를 그냥 lowercase하면 "grumpy"가 되어
+    /// 분석 스펙의 "prickly"와 달라지므로, rawValue.lowercased()가 아니라 명시적으로 매핑한다.
+    var analyticsValue: String {
+        switch self {
+        case .angry:
+            "anger"
+        case .happy:
+            "joy"
+        case .anxious:
+            "anxiety"
+        case .embarrassed:
+            "quirky"
+        case .sad:
+            "sadness"
+        case .heartache:
+            "prickly"
+        }
+    }
 }

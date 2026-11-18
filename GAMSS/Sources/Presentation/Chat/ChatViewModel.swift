@@ -45,6 +45,7 @@ final class ChatViewModel: ObservableObject {
     private let updateConversationTitleUseCase: UpdateConversationTitleUseCase
     private let detectRiskInTextUseCase: DetectRiskInTextUseCase
     private let summaryStore: ConversationSummaryStore
+    private let analyticsTracker: AnalyticsTracking
     /// 테스트에서 순차 노출이 끝나는 시점을 결정적으로 기다리기 위한 핸들.
     private(set) var revealTask: Task<Void, Never>?
     @Published private var isSendQueued = false
@@ -72,7 +73,8 @@ final class ChatViewModel: ObservableObject {
         summaryStore: ConversationSummaryStore,
         conversationId: Int? = nil,
         pendingFirstMessage: PendingFirstMessage? = nil,
-        initialDate: Date = Date()
+        initialDate: Date = Date(),
+        analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared
     ) {
         self.sendMessageUseCase = sendMessageUseCase
         self.getMessagesUseCase = getMessagesUseCase
@@ -85,6 +87,7 @@ final class ChatViewModel: ObservableObject {
         self.conversationId = conversationId
         self.pendingFirstMessage = pendingFirstMessage
         self.conversationDate = initialDate
+        self.analyticsTracker = analyticsTracker
     }
 
     /// 화면 진입 시 한 번 호출한다. 기존 대화면 히스토리를 불러오고, 홈에서 아직 안 보낸 첫
@@ -238,6 +241,7 @@ final class ChatViewModel: ObservableObject {
             riskDetection = detection
         }
         if detection.shouldBlock {
+            analyticsTracker.track(.chatSendBlocked)
             return
         }
 
@@ -265,6 +269,7 @@ final class ChatViewModel: ObservableObject {
             pendingUserMessage = nil
             seed(with: sent)
             isNetworkUnreachable = false
+            analyticsTracker.track(.chatSend)
 
             // 요약기(온디바이스 추론)가 끝날 때까지 다음 입력을 막지 않도록 백그라운드로 돌린다.
             // self가 아니라 summaryStore를 직접 캡처해 화면을 나가도 저장은 끝까지 완료되게 한다.
@@ -276,16 +281,19 @@ final class ChatViewModel: ObservableObject {
             if input.isEmpty { input = trimmed }
             pendingResendExcludedCharacters = excludedCharacters
             isNetworkUnreachable = true
+            analyticsTracker.track(.chatSendFail)
         } catch let error as SendMessageValidationError {
             pendingUserMessage = nil
             if self.replyTarget == nil { self.replyTarget = replyTarget }
             if input.isEmpty { input = trimmed }
             alertMessage = error.errorDescription
+            analyticsTracker.track(.chatSendFail)
         } catch {
             pendingUserMessage = nil
             if self.replyTarget == nil { self.replyTarget = replyTarget }
             if input.isEmpty { input = trimmed }
             alertMessage = "메시지를 보내지 못했어요"
+            analyticsTracker.track(.chatSendFail)
         }
     }
 
@@ -350,6 +358,13 @@ final class ChatViewModel: ObservableObject {
     func requestEndConversation() {
         guard canEndConversation else { return }
         isEndConfirmationPresented = true
+        analyticsTracker.track(.chatEndRequest)
+    }
+
+    /// 종료 확인 팝업의 "뒤로가기"에서 호출한다.
+    func cancelEndConfirmation() {
+        isEndConfirmationPresented = false
+        analyticsTracker.track(.chatEndCancel)
     }
 
     /// 종료 확인 팝업에서 "종료할래요"를 눌렀을 때. endConversation → createCard 순서로 호출한다.
@@ -357,6 +372,7 @@ final class ChatViewModel: ObservableObject {
     /// 실패해도 입력창은 다시 열어주지 않는다 — retryCreateCard()로만 재시도한다.
     func confirmEndConversation() async {
         guard let conversationId, !isEnding else { return }
+        analyticsTracker.track(.chatEndConfirm)
         isEnding = true
         defer { isEnding = false }
 
@@ -390,8 +406,10 @@ final class ChatViewModel: ObservableObject {
         let emotion = EmotionCharacter.dominant(in: messages)
         do {
             createdCard = try await createCardUseCase.execute(conversationId: conversationId, emotion: emotion, summary: summary)
+            analyticsTracker.track(.cardCreateSuccess)
         } catch {
             alertMessage = "카드를 만들지 못했어요. 다시 시도해주세요"
+            analyticsTracker.track(.cardCreateFail)
         }
     }
 

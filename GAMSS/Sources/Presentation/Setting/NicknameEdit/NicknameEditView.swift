@@ -89,5 +89,6 @@ struct NicknameEditView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .hidesTabBar()
+        .trackScreen(.nicknameChange)
     }
 }

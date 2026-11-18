@@ -21,24 +21,46 @@ final class CardShredViewModel: ObservableObject {
     @Published private(set) var isSubmitting = false
     @Published private(set) var toastMessage: String?
 
+    let emotion: Emotion
     private let mode: CardShredMode
     private let deleteCardUseCase: DeleteCardUseCase?
     private let deleteAllCardUseCase: DeleteAllCardUseCase?
+    private let analyticsTracker: AnalyticsTracking
     private let requiredSteps = 4
     private var toastDismissTask: Task<Void, Never>?
 
     static let shredFailureToastMessage = "파쇄에 실패했어요. 다시 시도해주세요"
 
-    init(cardId: Int, deleteCardUseCase: DeleteCardUseCase) {
+    var analyticsScope: AnalyticsScope {
+        switch mode {
+        case .single: .single
+        case .all: .emotionAll
+        }
+    }
+
+    init(
+        emotion: Emotion,
+        cardId: Int,
+        deleteCardUseCase: DeleteCardUseCase,
+        analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared
+    ) {
+        self.emotion = emotion
         self.mode = .single(cardId: cardId)
         self.deleteCardUseCase = deleteCardUseCase
         self.deleteAllCardUseCase = nil
+        self.analyticsTracker = analyticsTracker
     }
 
-    init(deleteAllCardUseCase: DeleteAllCardUseCase) {
+    init(
+        emotion: Emotion,
+        deleteAllCardUseCase: DeleteAllCardUseCase,
+        analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared
+    ) {
+        self.emotion = emotion
         self.mode = .all
         self.deleteCardUseCase = nil
         self.deleteAllCardUseCase = deleteAllCardUseCase
+        self.analyticsTracker = analyticsTracker
     }
 
     var isPowerOn: Bool {
@@ -56,6 +78,7 @@ final class CardShredViewModel: ObservableObject {
     func advance() {
         guard step < requiredSteps else { return }
         step += 1
+        trackTap(tapCount: step)
     }
 
     func reset() {
@@ -68,6 +91,7 @@ final class CardShredViewModel: ObservableObject {
 
         isSubmitting = true
         defer { isSubmitting = false }
+        trackTap(tapCount: step + 1)
 
         do {
             switch mode {
@@ -78,8 +102,10 @@ final class CardShredViewModel: ObservableObject {
                 guard let deleteAllCardUseCase else { return false }
                 try await deleteAllCardUseCase.execute()
             }
+            analyticsTracker.track(.cardShredSuccess(emotion: emotion, scope: analyticsScope))
             return true
         } catch {
+            analyticsTracker.track(.cardShredFail(emotion: emotion, scope: analyticsScope))
             return false
         }
     }
@@ -92,5 +118,13 @@ final class CardShredViewModel: ObservableObject {
             guard !Task.isCancelled else { return }
             self?.toastMessage = nil
         }
+    }
+
+    /// `advance()`(접는 탭)와 `shred()`(마지막 파쇄 탭) 양쪽에서 호출해, 탭마다 하나씩
+    /// `card_shred_tap`을 기록한다. `isShredEnabled`(= `step >= requiredSteps`)는 마지막
+    /// `advance()` 호출 후와 그 다음 `shred()` 호출 양쪽에서 똑같이 true라 두 경우를
+    /// 구분하지 못하므로, 호출부가 직접 자신의 탭 번호를 넘긴다.
+    private func trackTap(tapCount: Int) {
+        analyticsTracker.track(.cardShredTap(tapCount: tapCount, emotion: emotion, scope: analyticsScope))
     }
 }
