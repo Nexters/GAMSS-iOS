@@ -40,11 +40,18 @@ final class ConversationListViewModel: ObservableObject {
     private let getIncompleteConversationsUseCase: GetIncompleteConversationsUseCase
     private let deleteConversationsUseCase: DeleteConversationsUseCase
     private let searchConversationUseCase: SearchConversationUseCase
-    
-    init(getIncompleteConversationsUseCase: GetIncompleteConversationsUseCase, deleteConversationsUseCase: DeleteConversationsUseCase, searchConversationUseCase: SearchConversationUseCase) {
+    private let analyticsTracker: AnalyticsTracking
+
+    init(
+        getIncompleteConversationsUseCase: GetIncompleteConversationsUseCase,
+        deleteConversationsUseCase: DeleteConversationsUseCase,
+        searchConversationUseCase: SearchConversationUseCase,
+        analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared
+    ) {
         self.getIncompleteConversationsUseCase = getIncompleteConversationsUseCase
         self.deleteConversationsUseCase = deleteConversationsUseCase
         self.searchConversationUseCase = searchConversationUseCase
+        self.analyticsTracker = analyticsTracker
     }
     
     func load() async {
@@ -97,6 +104,7 @@ final class ConversationListViewModel: ObservableObject {
             }
             
             selectedConversations.removeAll()
+            analyticsTracker.track(.chatDeleteConfirm)
         } catch {
             alertMessage = "채팅방을 삭제하지 못했어요"
         }
@@ -143,6 +151,7 @@ final class ConversationListViewModel: ObservableObject {
             searchResults = page.items
             isSearchExecuted = true
             isNetworkUnreachable = false
+            analyticsTracker.track(.chatSearch)
         } catch NetworkError.noConnection {
             isNetworkUnreachable = true
         } catch {

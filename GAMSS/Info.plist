@@ -10,6 +10,10 @@
 	<string>$(BASE_URL)</string>
 	<key>FIREBASE_CRASHLYTICS_COLLECTION_ENABLED</key>
 	<string>NO</string>
+	<key>MIXPANEL_TOKEN</key>
+	<string>$(MIXPANEL_TOKEN)</string>
+	<key>MIXPANEL_ENVIRONMENT</key>
+	<string>$(MIXPANEL_ENVIRONMENT)</string>
 	<key>PRIVACY_POLICY_URL</key>
 	<string>$(PRIVACY_POLICY_URL)</string>
 	<key>TERMS_OF_SERVICE_URL</key>

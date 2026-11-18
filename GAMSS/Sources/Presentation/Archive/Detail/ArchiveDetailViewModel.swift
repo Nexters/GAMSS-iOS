@@ -15,17 +15,23 @@ final class ArchiveDetailViewModel: ObservableObject {
     @Published private(set) var isLoading = true
     @Published var errorMessage: String?
 
+    let emotion: Emotion
     private let fetchCardsByDateUseCase: FetchCardsByDateUseCase
     private let deleteAllCardUseCase: DeleteAllCardUseCase
+    private let analyticsTracker: AnalyticsTracking
 
     init(
+        emotion: Emotion,
         fetchCardsByDateUseCase: FetchCardsByDateUseCase,
         deleteAllCardUseCase: DeleteAllCardUseCase,
-        selectedMonth: Date = Date.now
+        selectedMonth: Date = Date.now,
+        analyticsTracker: AnalyticsTracking = DefaultAnalyticsTracker.shared
     ) {
+        self.emotion = emotion
         self.fetchCardsByDateUseCase = fetchCardsByDateUseCase
         self.deleteAllCardUseCase = deleteAllCardUseCase
         self.selectedMonth = selectedMonth
+        self.analyticsTracker = analyticsTracker
     }
 
     var dropCount: Int { notes.count }
@@ -48,6 +54,8 @@ final class ArchiveDetailViewModel: ObservableObject {
         selectedMonth = month
         notes = []
         await load()
+        let yearMonth = DateFormatterFactory.yearMonthWithHypen.string(from: month)
+        analyticsTracker.track(.archiveMonthChange(emotion: emotion, yearMonth: yearMonth))
     }
 
     func clearNotes() {
