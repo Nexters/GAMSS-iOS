@@ -12,14 +12,12 @@ struct ClickerKeycapView: View {
     let isEnabled: Bool
     let action: () -> Void
     
-    private let keySize: CGFloat = 132
-    
     var body: some View {
         Button(action: action) {
             Image("clicker")
                 .resizable()
                 .scaledToFit()
-                .frame(width: keySize, height: keySize)
+                .frame(width: 167, height: 179)
         }
         .buttonStyle(ClickerKeyButtonStyle())
         .disabled(!isEnabled)

@@ -20,13 +20,13 @@ struct ClickerGameView: View {
             NavigationBarView(leading: .backButton, onBack: { dismiss() })
 
             statsRow
-                .padding(.horizontal, NavigationBarMetrics.horizontalPadding)
-                .padding(.top, Spacing.spacing100)
+                .padding(.horizontal, Spacing.spacing600)
+                .padding(.top, 30)
 
             Spacer(minLength: 0)
 
             keysRow
-                .padding(.bottom, Spacing.spacing700)
+                .padding(.bottom, 42)
         }
         .hidesTabBar()
         .onAppear(perform: viewModel.start)
@@ -34,7 +34,7 @@ struct ClickerGameView: View {
     }
 
     private var statsRow: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .center, spacing: 36) {
             timerColumn
                 .frame(maxWidth: .infinity)
 
@@ -46,12 +46,12 @@ struct ClickerGameView: View {
     }
 
     private var timerColumn: some View {
-        VStack(spacing: Spacing.spacing050) {
-            Image(systemName: "clock")
-                .font(.system(size: 20, weight: .regular))
+        VStack(spacing: Spacing.spacing025) {
+            Image("clock")
+                .frame(width: 24, height: 24)
                 .foregroundStyle(Color.colorGray900)
             Text(viewModel.formattedTime)
-                .typography(.body5Medium)
+                .typography(.subtitle3)
                 .monospacedDigit()
                 .foregroundStyle(Color.colorGray900)
         }
@@ -59,25 +59,26 @@ struct ClickerGameView: View {
 
     private var scoreBox: some View {
         Text("\(viewModel.formattedScore) 점")
-            .typography(.title5)
+            .typography(.title2)
             .monospacedDigit()
-            .foregroundStyle(Color.colorGray950)
-            .padding(.horizontal, Spacing.spacing400)
-            .padding(.vertical, Spacing.spacing100)
+            .foregroundStyle(Color.colorGray900)
+            .lineLimit(1)
+            .fixedSize(horizontal: true, vertical: false)
+            .padding(Spacing.spacing300)
             .overlay(
-                RoundedRectangle(cornerRadius: Radius.radius050)
-                    .stroke(Color.colorGray900, lineWidth: 1.5)
+                Rectangle()
+                    .stroke(Color.colorGray950, lineWidth: 1.5)
             )
     }
 
     private var restartColumn: some View {
         Button(action: viewModel.restart) {
-            VStack(spacing: Spacing.spacing050) {
-                Image(systemName: "arrow.clockwise")
-                    .font(.system(size: 20, weight: .regular))
+            VStack(spacing: Spacing.spacing025) {
+                Image("arrow_clock_wise")
+                    .frame(width: 24, height: 24)
                     .foregroundStyle(Color.colorGray900)
                 Text("다시하기")
-                    .typography(.body5Medium)
+                    .typography(.subtitle3)
                     .foregroundStyle(Color.colorGray900)
             }
         }
@@ -86,19 +87,17 @@ struct ClickerGameView: View {
 
     private var keysRow: some View {
         HStack {
-            Spacer(minLength: 0)
             ClickerKeycapView(
                 isEnabled: viewModel.isPlaying,
                 action: handleTap
             )
-            Spacer(minLength: Spacing.spacing400)
+            Spacer()
             ClickerKeycapView(
                 isEnabled: viewModel.isPlaying,
                 action: handleTap
             )
-            Spacer(minLength: 0)
         }
-        .padding(.horizontal, Spacing.spacing400)
+        .padding(.horizontal, Spacing.spacing350)
     }
 
     private func handleTap() {
