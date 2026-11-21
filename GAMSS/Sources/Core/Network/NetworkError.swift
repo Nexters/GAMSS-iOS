@@ -10,7 +10,7 @@ import Foundation
 enum NetworkError: Error {
     case invalidURL
     case invalidResponse
-    case httpError(statusCode: Int)
+    case httpError(statusCode: Int, code: String?)
     case decodingError
     case expiredToken
     case noConnection
