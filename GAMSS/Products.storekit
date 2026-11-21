@@ -15,7 +15,7 @@
     {
       "displayPrice" : "990",
       "familyShareable" : false,
-      "internalID" : "token_300000",
+      "internalID" : "token_300K",
       "localizations" : [
         {
           "description" : "토큰 30만개",
@@ -23,14 +23,14 @@
           "locale" : "ko_KR"
         }
       ],
-      "productID" : "token_300000",
+      "productID" : "token_300K",
       "referenceName" : "토큰 30만",
       "type" : "Consumable"
     },
     {
       "displayPrice" : "1500",
       "familyShareable" : false,
-      "internalID" : "token_500000",
+      "internalID" : "token_500K",
       "localizations" : [
         {
           "description" : "토큰 50만개",
@@ -38,14 +38,14 @@
           "locale" : "ko_KR"
         }
       ],
-      "productID" : "token_500000",
+      "productID" : "token_500K",
       "referenceName" : "토큰 50만",
       "type" : "Consumable"
     },
     {
       "displayPrice" : "3000",
       "familyShareable" : false,
-      "internalID" : "token_1000000",
+      "internalID" : "token_1m",
       "localizations" : [
         {
           "description" : "토큰 100만개",
@@ -53,7 +53,7 @@
           "locale" : "ko_KR"
         }
       ],
-      "productID" : "token_1000000",
+      "productID" : "token_1m",
       "referenceName" : "토큰 100만",
       "type" : "Consumable"
     }
